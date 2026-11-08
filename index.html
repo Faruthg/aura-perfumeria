@@ -4,60 +4,142 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AURA ATELIER | Perfumería & Gestión de Inventario</title>
-  <!-- Google Fonts -->
+  <!-- Preload & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS: Configuración previa obligatoria para el CDN -->
+  <script>
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                300: '#f3e5ab',
+                400: '#e6ca65',
+                500: '#d4af37',
+                600: '#aa8c2c',
+                700: '#806921',
+              },
+              noir: {
+                950: '#0c0c0e',
+                900: '#141418',
+                850: '#1a1a20',
+                800: '#22222b',
+                750: '#2b2b36',
+                700: '#33333f',
+                600: '#474758'
+              }
+            },
+            fontFamily: {
+              serif: ['"Cormorant Garamond"', 'serif', 'Georgia'],
+              sans: ['"Plus Jakarta Sans"', 'sans-serif', 'system-ui'],
+            }
+          }
+        }
+      }
+    };
+  </script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            gold: {
-              300: '#f3e5ab',
-              400: '#e6ca65',
-              500: '#d4af37',
-              600: '#aa8c2c',
-              700: '#806921',
-            },
-            noir: {
-              950: '#0c0c0e',
-              900: '#141418',
-              850: '#1a1a20',
-              800: '#22222b',
-              750: '#2b2b36',
-              700: '#33333f',
-              600: '#474758'
-            }
-          },
-          fontFamily: {
-            serif: ['"Cormorant Garamond"', 'serif'],
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
+
+  <!-- ESTILOS NATIVOS A PRUEBA DE FALLOS (Para que móviles como iPhone NUNCA se vean desarmados) -->
   <style>
-    html { scroll-behavior: smooth; }
+    /* Reset & Contención de imágenes obligatoria */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      scroll-behavior: smooth;
+      background-color: #0c0c0e !important;
+      color: #f3f4f6;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0c0c0e !important;
+      color: #e5e7eb !important;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    button {
+      background: none;
+      border: none;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    /* Colores oscuros y dorados garantizados */
+    .bg-noir-950 { background-color: #0c0c0e !important; }
+    .bg-noir-900 { background-color: #141418 !important; }
+    .bg-noir-850 { background-color: #1a1a20 !important; }
+    .bg-noir-800 { background-color: #22222b !important; }
+    .text-gold-400 { color: #e6ca65 !important; }
+    .text-gold-500 { color: #d4af37 !important; }
+    .bg-gold-500 { background-color: #d4af37 !important; }
+
+    /* Layout & Grid Nativo Fallback */
+    #publicProductsGrid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+      gap: 1.5rem !important;
+      width: 100% !important;
+    }
+    .hidden {
+      display: none !important;
+    }
+
+    /* Contenedor de fotos de perfumes: NUNCA se desbordan */
+    .product-img-wrap, .relative.h-60 {
+      height: 15rem !important;
+      max-height: 240px !important;
+      width: 100% !important;
+      position: relative !important;
+      overflow: hidden !important;
+      background-color: #141418 !important;
+      border-radius: 0.75rem 0.75rem 0 0 !important;
+    }
+    .product-img-wrap img, .relative.h-60 img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+
+    /* Scrollbar estilizada */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #0c0c0e; }
     ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
     
     .glass-card {
-      background: rgba(26, 26, 32, 0.75);
+      background: rgba(26, 26, 32, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.2);
     }
     .glass-card:hover {
-      border-color: rgba(212, 175, 55, 0.4);
+      border-color: rgba(212, 175, 55, 0.45);
     }
 
     .nav-tab-active {
