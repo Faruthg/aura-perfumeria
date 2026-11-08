@@ -80,23 +80,13 @@
 <body class="bg-noir-950 text-gray-200 font-sans antialiased selection:bg-gold-500 selection:text-black min-h-screen flex flex-col">
 
   <!-- ========================================== -->
-  <!-- BARRA DE NAVEGACIÓN SUPERIOR GLOBAL       -->
+  <!-- BARRA DE ANUNCIO SUPERIOR                 -->
   <!-- ========================================== -->
-  <div class="bg-gradient-to-r from-noir-900 via-gold-950/40 to-noir-900 border-b border-gold-500/20 py-2 px-4 text-xs font-medium flex items-center justify-between">
-    <div class="hidden sm:flex items-center gap-2 text-gold-400">
+  <div class="bg-gradient-to-r from-noir-900 via-gold-950/40 to-noir-900 border-b border-gold-500/20 py-2 px-4 text-xs font-medium flex items-center justify-center text-center">
+    <div class="flex items-center gap-2 text-gold-400">
       <i data-lucide="sparkles" class="w-3.5 h-3.5 text-gold-400"></i>
-      <span>AURA ATELIER • Perfumes 100% Originales & Fórmulas Preparadas Extrait 33%</span>
-    </div>
-
-    <!-- Selector de Vistas: Pública vs Administrador -->
-    <div class="flex items-center gap-2 mx-auto sm:mx-0">
-      <span class="text-gray-400 text-[11px] uppercase tracking-wider font-semibold">Modo activo:</span>
-      <button onclick="switchView('store')" id="tabBtnStore" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm">
-        <i data-lucide="store" class="w-3.5 h-3.5"></i> Vista Tienda
-      </button>
-      <button onclick="switchView('admin')" id="tabBtnAdmin" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5">
-        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Panel Administrador
-      </button>
+      <span>AURA ATELIER • Perfumes 100% Originales & Fórmulas Preparadas Extrait 33% • Envíos a todo el país</span>
+      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-gold-400"></i>
     </div>
   </div>
 
@@ -533,8 +523,8 @@
           <button onclick="goToComparativa()" class="hover:text-gold-400">Comparativa</button>
           <button onclick="showSection('laboratorio')" class="hover:text-gold-400">Laboratorio</button>
           <button onclick="showSection('preguntas')" class="hover:text-gold-400">Preguntas</button>
-          <button onclick="switchView('admin')" class="text-gold-400 hover:underline flex items-center gap-1">
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i> Administrador
+          <button onclick="openAdminLoginModal()" class="text-gray-500 hover:text-gold-400 flex items-center gap-1 transition-colors" title="Acceso Administrativo">
+            <i data-lucide="lock" class="w-3 h-3"></i> Acceso Staff
           </button>
         </div>
       </div>
@@ -557,15 +547,21 @@
           <p class="text-xs text-gray-400">El stock físico, costos internos y proveedores son privados y no se muestran al cliente público.</p>
         </div>
 
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-          <button onclick="openProductForm()" class="flex-1 sm:flex-initial px-4 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
+          <button onclick="openProductForm()" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2">
             <i data-lucide="plus-circle" class="w-4 h-4"></i> Nuevo Perfume
           </button>
-          <button onclick="resetToDefaultData()" class="px-3 py-2.5 bg-noir-800 hover:bg-noir-700 text-gray-300 border border-white/10 text-xs rounded transition-colors" title="Restaurar datos de muestra originales">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <button onclick="openCredentialsModal()" class="px-3 py-2 bg-noir-800 hover:bg-noir-750 text-gray-300 border border-white/10 text-xs rounded transition-colors flex items-center gap-1.5" title="Cambiar usuario y contraseña de administrador">
+            <i data-lucide="key-round" class="w-3.5 h-3.5 text-gold-400"></i> Clave
           </button>
-          <button onclick="switchView('store')" class="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-gold-400 border border-gold-500/30 text-xs rounded font-semibold transition-colors flex items-center gap-1.5">
-            <i data-lucide="eye" class="w-4 h-4"></i> Ver Tienda
+          <button onclick="resetToDefaultData()" class="px-3 py-2 bg-noir-800 hover:bg-noir-700 text-gray-300 border border-white/10 text-xs rounded transition-colors" title="Restaurar datos de muestra originales">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="switchView('store')" class="px-3.5 py-2 bg-noir-800 hover:bg-noir-750 text-gold-400 border border-gold-500/30 text-xs rounded font-semibold transition-colors flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Tienda
+          </button>
+          <button onclick="logoutAdmin()" class="px-3 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-500/30 text-xs rounded transition-colors flex items-center gap-1.5" title="Cerrar sesión de administrador">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Salir
           </button>
         </div>
       </div>
@@ -806,6 +802,90 @@
     </div>
   </div>
 
+  <!-- MODAL: LOGIN DE ADMINISTRADOR (PROTEGIDO) -->
+  <div id="adminLoginModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-noir-900 border-gold-500/40 rounded-2xl max-w-sm w-full p-6 sm:p-8 relative shadow-2xl">
+      <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-3 border border-gold-500/30">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white mb-1">Acceso Administrativo</h3>
+        <p class="text-xs text-gray-400">Ingresa tus credenciales para gestionar inventario, stock y precios.</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Usuario</label>
+          <div class="relative">
+            <i data-lucide="user" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="loginUsername" type="text" required placeholder="admin" class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+          </div>
+        </div>
+
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Contraseña</label>
+          <div class="relative">
+            <i data-lucide="key" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-9 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+            <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+              <i data-lucide="eye" id="eyeIconLogin" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="loginErrorMsg" class="hidden text-xs text-red-400 bg-red-950/40 p-2.5 rounded border border-red-500/30 text-center">
+          Credenciales incorrectas. Verifica usuario y contraseña.
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider text-xs rounded-lg transition-all shadow-lg shadow-gold-500/20">
+          Entrar al Panel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CAMBIAR CREDENCIALES (ADMIN) -->
+  <div id="credentialsModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-noir-900 border-gold-500/40 rounded-2xl max-w-sm w-full p-6 sm:p-8 relative shadow-2xl">
+      <button onclick="closeCredentialsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-3 border border-gold-500/30">
+          <i data-lucide="key-round" class="w-6 h-6"></i>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white mb-1">Seguridad del Panel</h3>
+        <p class="text-xs text-gray-400">Actualiza tu nombre de usuario y contraseña.</p>
+      </div>
+
+      <form onsubmit="handleUpdateCredentials(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Nuevo Usuario</label>
+          <input id="newAdminUser" type="text" required placeholder="admin" class="w-full bg-noir-950 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 text-xs">
+        </div>
+
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Nueva Contraseña</label>
+          <input id="newAdminPass" type="password" minlength="4" required placeholder="••••••••" class="w-full bg-noir-950 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 text-xs">
+        </div>
+
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Confirmar Contraseña</label>
+          <input id="confirmAdminPass" type="password" minlength="4" required placeholder="••••••••" class="w-full bg-noir-950 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 text-xs">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider text-xs rounded-lg transition-all">
+          Guardar Nuevas Credenciales
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Shopping Cart Drawer -->
   <div id="cartDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-noir-900 border-l border-gold-500/20 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
     <div class="p-6 border-b border-white/10 flex items-center justify-between">
@@ -850,6 +930,109 @@
   <!-- ========================================== -->
   <script>
     const STORAGE_KEY = 'aura_atelier_perfumes_v3';
+    const AUTH_KEY = 'aura_admin_credentials_v1';
+    const SESSION_KEY = 'aura_admin_session_active';
+
+    const DEFAULT_AUTH = {
+      user: 'admin',
+      pass: 'aura2026'
+    };
+
+    function getAuthCredentials() {
+      const stored = localStorage.getItem(AUTH_KEY);
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
+      }
+      return DEFAULT_AUTH;
+    }
+
+    function isAdminAuthenticated() {
+      return sessionStorage.getItem(SESSION_KEY) === 'true';
+    }
+
+    function openAdminLoginModal() {
+      if (isAdminAuthenticated()) {
+        switchView('admin');
+        return;
+      }
+      const modal = document.getElementById('adminLoginModal');
+      const error = document.getElementById('loginErrorMsg');
+      if (error) error.classList.add('hidden');
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAdminLoginModal() {
+      document.getElementById('adminLoginModal').classList.add('hidden');
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value;
+      const current = getAuthCredentials();
+
+      if (u === current.user && p === current.pass) {
+        sessionStorage.setItem(SESSION_KEY, 'true');
+        closeAdminLoginModal();
+        switchView('admin');
+        showToast("Sesión de administrador iniciada", "success");
+      } else {
+        const error = document.getElementById('loginErrorMsg');
+        if (error) error.classList.remove('hidden');
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem(SESSION_KEY);
+      switchView('store');
+      showToast("Has cerrado la sesión de administrador", "info");
+    }
+
+    function openCredentialsModal() {
+      const current = getAuthCredentials();
+      document.getElementById('newAdminUser').value = current.user;
+      document.getElementById('newAdminPass').value = '';
+      document.getElementById('confirmAdminPass').value = '';
+      document.getElementById('credentialsModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeCredentialsModal() {
+      document.getElementById('credentialsModal').classList.add('hidden');
+    }
+
+    function handleUpdateCredentials(e) {
+      e.preventDefault();
+      const newUser = document.getElementById('newAdminUser').value.trim();
+      const newPass = document.getElementById('newAdminPass').value;
+      const confirmPass = document.getElementById('confirmAdminPass').value;
+
+      if (!newUser) {
+        alert("El nombre de usuario no puede estar vacío.");
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ user: newUser, pass: newPass }));
+      closeCredentialsModal();
+      showToast("Credenciales de administrador actualizadas con éxito", "success");
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
 
     // Semilla inicial con stock interno y costos
     const DEFAULT_PERFUMES = [
@@ -1116,30 +1299,34 @@
     function switchView(view) {
       const vStore = document.getElementById('viewStore');
       const vAdmin = document.getElementById('viewAdmin');
-      const btnStore = document.getElementById('tabBtnStore');
-      const btnAdmin = document.getElementById('tabBtnAdmin');
 
       if (view === 'admin') {
+        // Validación de seguridad: debe estar autenticado
+        if (!isAdminAuthenticated()) {
+          openAdminLoginModal();
+          return;
+        }
+
         vStore.classList.add('hidden');
         vAdmin.classList.remove('hidden');
-
-        btnAdmin.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm";
-        btnStore.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5";
-        
         renderAdminTable();
       } else {
         vAdmin.classList.add('hidden');
         vStore.classList.remove('hidden');
-
-        btnStore.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm";
-        btnAdmin.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5";
-        
         showSection(currentActiveSection || 'catalogo');
         applyPublicFilters();
       }
       lucide.createIcons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Atajo de teclado secreto: Presionar Ctrl + Shift + A abre el login administrativo
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        openAdminLoginModal();
+      }
+    });
 
     // ==========================================
     // RENDERIZADO CATÁLOGO PÚBLICO
