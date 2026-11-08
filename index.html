@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA ATELIER | Perfumería & Gestión de Inventario</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              300: '#f3e5ab',
+              400: '#e6ca65',
+              500: '#d4af37',
+              600: '#aa8c2c',
+              700: '#806921',
+            },
+            noir: {
+              950: '#0c0c0e',
+              900: '#141418',
+              850: '#1a1a20',
+              800: '#22222b',
+              750: '#2b2b36',
+              700: '#33333f',
+              600: '#474758'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0c0c0e; }
+    ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    
+    .glass-card {
+      background: rgba(26, 26, 32, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .glass-card:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    .nav-tab-active {
+      color: #d4af37 !important;
+      position: relative;
+    }
+    .nav-tab-active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #d4af37;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-noir-950 text-gray-200 font-sans antialiased selection:bg-gold-500 selection:text-black min-h-screen flex flex-col">
+
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR GLOBAL       -->
+  <!-- ========================================== -->
+  <div class="bg-gradient-to-r from-noir-900 via-gold-950/40 to-noir-900 border-b border-gold-500/20 py-2 px-4 text-xs font-medium flex items-center justify-between">
+    <div class="hidden sm:flex items-center gap-2 text-gold-400">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-gold-400"></i>
+      <span>AURA ATELIER • Perfumes 100% Originales & Fórmulas Preparadas Extrait 33%</span>
+    </div>
+
+    <!-- Selector de Vistas: Pública vs Administrador -->
+    <div class="flex items-center gap-2 mx-auto sm:mx-0">
+      <span class="text-gray-400 text-[11px] uppercase tracking-wider font-semibold">Modo activo:</span>
+      <button onclick="switchView('store')" id="tabBtnStore" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm">
+        <i data-lucide="store" class="w-3.5 h-3.5"></i> Vista Tienda
+      </button>
+      <button onclick="switchView('admin')" id="tabBtnAdmin" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Panel Administrador
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VISTA 1: TIENDA PÚBLICA                    -->
+  <!-- ========================================== -->
+  <div id="viewStore" class="flex-1 flex flex-col">
+    <!-- Header Tienda -->
+    <header class="sticky top-0 z-40 bg-noir-950/90 backdrop-blur-md border-b border-white/5 transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        
+        <!-- Logo -->
+        <a href="javascript:void(0)" onclick="showSection('catalogo')" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-full border border-gold-500/40 flex items-center justify-center group-hover:border-gold-400 transition-colors">
+            <i data-lucide="flask-conical" class="w-5 h-5 text-gold-400"></i>
+          </div>
+          <div>
+            <span class="font-serif text-2xl tracking-[0.25em] font-bold text-white uppercase block leading-none">Aura</span>
+            <span class="text-[10px] tracking-[0.35em] text-gold-400 font-sans uppercase">Atelier & Parfumerie</span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase font-semibold text-gray-300">
+          <button onclick="showSection('catalogo')" id="nav-catalogo" class="nav-tab-active hover:text-gold-400 transition-colors py-1">
+            Catálogo
+          </button>
+          
+          <button onclick="goToComparativa()" id="nav-comparativa" class="hover:text-gold-400 transition-colors py-1">
+            Original vs Preparado
+          </button>
+          
+          <button onclick="showSection('laboratorio')" id="nav-laboratorio" class="hover:text-gold-400 transition-colors py-1 flex items-center gap-1.5">
+            <span>Laboratorio</span>
+            <span class="text-[9px] bg-gold-500/20 text-gold-400 px-1.5 py-0.5 rounded border border-gold-500/30">Custom</span>
+          </button>
+          
+          <button onclick="showSection('preguntas')" id="nav-preguntas" class="hover:text-gold-400 transition-colors py-1">
+            Preguntas
+          </button>
+        </nav>
+
+        <!-- Acciones: Carrito -->
+        <div class="flex items-center gap-3">
+          <button onclick="toggleCart()" class="relative p-2.5 bg-noir-850 hover:bg-noir-800 border border-gold-500/30 rounded-full text-gold-400 hover:text-gold-300 transition-all flex items-center justify-center">
+            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-gold-500 text-black text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-lg">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de navegación móvil (Pestañas rápidas en celular) -->
+      <div class="md:hidden flex items-center justify-around border-t border-white/5 py-2 px-2 bg-noir-900/95 text-[11px] uppercase tracking-wider font-semibold">
+        <button onclick="showSection('catalogo')" id="mob-nav-catalogo" class="px-2.5 py-1 text-gold-400 font-bold">Catálogo</button>
+        <button onclick="goToComparativa()" id="mob-nav-comparativa" class="px-2.5 py-1 text-gray-400">Comparativa</button>
+        <button onclick="showSection('laboratorio')" id="mob-nav-laboratorio" class="px-2.5 py-1 text-gray-400">Laboratorio</button>
+        <button onclick="showSection('preguntas')" id="mob-nav-preguntas" class="px-2.5 py-1 text-gray-400">Preguntas</button>
+      </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- SECCIÓN 1: CATÁLOGO DE PRODUCTOS (VISTA DEDICADA)       -->
+    <!-- ======================================================== -->
+    <main id="section-catalogo" class="section-view flex-1">
+      <!-- Hero Banner Catálogo -->
+      <section class="relative min-h-[440px] flex items-center justify-center overflow-hidden border-b border-white/5 py-14">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold-950/20 via-noir-950 to-noir-950 -z-10"></div>
+        <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[650px] h-[320px] bg-gold-500/10 blur-[130px] rounded-full -z-10 pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto px-4 text-center">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs tracking-widest uppercase mb-4">
+            <i data-lucide="award" class="w-4 h-4"></i> Dos mundos, una misma pasión olfativa
+          </div>
+          <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-white mb-5 leading-[1.1]">
+            Catálogo de Fragancias <br>
+            <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-gold-600">Originales & Preparadas</span>
+          </h1>
+          <p class="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto mb-8 font-light leading-relaxed">
+            Explora piezas de diseñador y nicho 100% auténticas, o descubre nuestras fórmulas preparadas en laboratorio al 33% de concentración de aceites esenciales franceses.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onclick="setPublicFilter('original')" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-semibold tracking-wider text-xs uppercase rounded shadow-lg shadow-gold-500/20 transition-all flex items-center justify-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4"></i> Filtrar Originales
+            </button>
+            <button onclick="setPublicFilter('preparado')" class="w-full sm:w-auto px-6 py-2.5 bg-noir-900 hover:bg-noir-850 text-white border border-gold-500/40 hover:border-gold-400 font-semibold tracking-wider text-xs uppercase rounded transition-all flex items-center justify-center gap-2">
+              <i data-lucide="flask-conical" class="w-4 h-4 text-gold-400"></i> Filtrar Preparados
+            </button>
+            <button onclick="showSection('laboratorio')" class="w-full sm:w-auto px-6 py-2.5 bg-noir-850 hover:bg-noir-800 text-gold-400 border border-white/10 text-xs uppercase tracking-wider rounded transition-all flex items-center justify-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> Pedir Fórmula a Medida
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid & Filtros -->
+      <section class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div>
+            <span class="text-gold-400 text-xs tracking-widest uppercase font-semibold block mb-1">Inventario en tiempo real</span>
+            <h2 class="font-serif text-3xl text-white font-bold">Colección Seleccionada</h2>
+          </div>
+
+          <!-- Buscador de productos -->
+          <div class="relative w-full md:w-80">
+            <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+              id="publicSearchInput"
+              type="text" 
+              placeholder="Buscar por nombre, nota o marca..." 
+              oninput="applyPublicFilters()"
+              class="w-full bg-noir-900 border border-white/10 rounded-full pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500 transition-colors"
+            />
+          </div>
+        </div>
+
+        <!-- Filtros por tipo -->
+        <div class="flex flex-wrap items-center gap-2 pb-6 border-b border-white/10 mb-8">
+          <button onclick="setPublicFilter('all')" id="btnFilter-all" class="filter-tab active px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all bg-gold-500 text-black">
+            Todos (<span id="count-all">0</span>)
+          </button>
+          <button onclick="setPublicFilter('original')" id="btnFilter-original" class="filter-tab px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all bg-noir-900 border border-white/10 text-gray-300 hover:text-gold-400 hover:border-gold-500/40">
+            💎 Originales (<span id="count-original">0</span>)
+          </button>
+          <button onclick="setPublicFilter('preparado')" id="btnFilter-preparado" class="filter-tab px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all bg-noir-900 border border-white/10 text-gray-300 hover:text-gold-400 hover:border-gold-500/40">
+            🧪 Preparados al 33% (<span id="count-preparado">0</span>)
+          </button>
+          <button onclick="setPublicFilter('decant')" id="btnFilter-decant" class="filter-tab px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all bg-noir-900 border border-white/10 text-gray-300 hover:text-gold-400 hover:border-gold-500/40">
+            💉 Decants (<span id="count-decant">0</span>)
+          </button>
+        </div>
+
+        <!-- Grid de productos -->
+        <div id="publicProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+        <!-- Estado vacío -->
+        <div id="publicEmptyState" class="hidden text-center py-16">
+          <i data-lucide="package-x" class="w-12 h-12 text-gray-600 mx-auto mb-3"></i>
+          <h3 class="font-serif text-xl text-white font-semibold mb-2">No se encontraron fragancias</h3>
+          <p class="text-sm text-gray-400 mb-6">Prueba con otra palabra clave o agrega nuevos perfumes desde el panel de administración.</p>
+          <button onclick="switchView('admin')" class="px-5 py-2.5 bg-gold-500 text-black text-xs font-bold uppercase rounded tracking-wider">
+            Ir al Panel de Administrador
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- BLOQUE COMPARATIVO AL FINAL DEL CATÁLOGO                 -->
+      <!-- ======================================================== -->
+      <section id="comparativa-bloque" class="py-16 bg-noir-900 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <!-- Encabezado de la Comparativa -->
+          <div class="text-center max-w-3xl mx-auto mb-14">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs tracking-widest uppercase font-semibold mb-3 border border-gold-500/20">
+              <i data-lucide="scale" class="w-3.5 h-3.5"></i> Transparencia & Conocimiento Olfativo
+            </span>
+            <h2 class="font-serif text-3xl sm:text-4xl text-white font-bold mb-3">Original vs Fórmula Preparada</h2>
+            <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+              En Aura Atelier respetamos ambos conceptos. Te explicamos exactamente qué recibes en cada opción para que elijas de forma informada según tu ocasión y presupuesto.
+            </p>
+          </div>
+
+          <!-- Tarjetas Principales -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
+            <!-- Tarjeta Originales -->
+            <div class="glass-card p-8 rounded-2xl border-blue-500/30 relative overflow-hidden">
+              <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold mb-6">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs uppercase tracking-widest font-bold text-blue-400 block mb-1">Garantía de Marca</span>
+              <h3 class="font-serif text-2xl text-white font-bold mb-3">Perfumes 100% Originales</h3>
+              <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                Provenientes de distribuidores autorizados en sus envases oficiales sellados al vacío. Diseñados para amantes del diseño de autor y piezas de colección.
+              </p>
+
+              <ul class="space-y-3 text-xs text-gray-300 border-t border-white/5 pt-4">
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Caja y celofán de fábrica:</strong> Frasco emblemático con tapa magnética o grabados de autor.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Código Batch Code auditable:</strong> Verificable en plataformas internacionales como CheckFresh.com.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Ideal para regalo:</strong> La opción preferida para aniversarios y coleccionismo personal.</span>
+                </li>
+              </ul>
+
+              <div class="mt-8 pt-4 border-t border-white/5">
+                <button onclick="setPublicFilter('original')" class="w-full py-2.5 bg-blue-950/60 hover:bg-blue-900 text-blue-200 border border-blue-500/40 rounded text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
+                  <i data-lucide="search" class="w-3.5 h-3.5"></i> Ver Catálogo de Originales
+                </button>
+              </div>
+            </div>
+
+            <!-- Tarjeta Preparados -->
+            <div class="glass-card p-8 rounded-2xl border-gold-500/40 relative overflow-hidden">
+              <div class="w-12 h-12 rounded-xl bg-gold-500/20 text-gold-400 flex items-center justify-center font-bold mb-6">
+                <i data-lucide="flask-conical" class="w-6 h-6"></i>
+              </div>
+              <span class="text-xs uppercase tracking-widest font-bold text-gold-400 block mb-1">Laboratorio Propio</span>
+              <h3 class="font-serif text-2xl text-white font-bold mb-3">Fórmulas Preparadas Extrait 33%</h3>
+              <p class="text-xs text-gray-300 leading-relaxed mb-6">
+                Formulaciones elaboradas con aceites puros importados de Grasse, Francia, macerados durante 21 días en frío para maximizar proyección y fijación en piel.
+              </p>
+
+              <ul class="space-y-3 text-xs text-gray-300 border-t border-white/5 pt-4">
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-gold-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>33% de aceite puro (Extrait):</strong> Mayor concentración que un Eau de Parfum comercial (15%).</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-gold-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Fijación extrema de 10 a 14 hrs:</strong> Sin olor a alcohol gracias al reposo prolongado y filtrado criogénico.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="check" class="w-4 h-4 text-gold-400 flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Ahorro inteligente:</strong> Misma experiencia aromática a una fracción del costo de la marca comercial.</span>
+                </li>
+              </ul>
+
+              <div class="mt-8 pt-4 border-t border-white/5">
+                <button onclick="setPublicFilter('preparado')" class="w-full py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider rounded text-xs transition-colors flex items-center justify-center gap-2">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Ver Fórmulas Preparadas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla Comparativa Detallada -->
+          <div class="glass-card rounded-2xl p-6 sm:p-8 border border-white/10">
+            <h3 class="font-serif text-2xl text-white font-bold mb-6 text-center">Tabla Comparativa Frente a Frente</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-noir-950 text-gold-400 uppercase tracking-wider border-b border-white/10">
+                  <tr>
+                    <th class="py-3 px-4">Característica</th>
+                    <th class="py-3 px-4 text-blue-300">💎 Perfume Original</th>
+                    <th class="py-3 px-4 text-gold-300">🧪 Fórmula Preparada Aura</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-gray-300">
+                  <tr>
+                    <td class="py-3 px-4 font-semibold text-white">Concentración de Esencia</td>
+                    <td class="py-3 px-4 text-gray-400">12% - 18% (EDT / EDP Comercial)</td>
+                    <td class="py-3 px-4 font-bold text-gold-400">33% Extrait de Parfum (Máxima)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-4 font-semibold text-white">Fijación en Piel Estimada</td>
+                    <td class="py-3 px-4 text-gray-400">5 a 8 horas</td>
+                    <td class="py-3 px-4 font-bold text-emerald-400">10 a 14 horas continuas</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-4 font-semibold text-white">Frasco y Presentación</td>
+                    <td class="py-3 px-4 text-gray-400">Frasco de autor oficial en caja de lujo</td>
+                    <td class="py-3 px-4 text-gray-400">Frasco cilíndrico minimalista recargable con atomizador fino</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-4 font-semibold text-white">Origen de los Aceites</td>
+                    <td class="py-3 px-4 text-gray-400">Laboratorios de la marca comercial</td>
+                    <td class="py-3 px-4 text-gray-400">Aceites esenciales franceses importados de Grasse</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-4 font-semibold text-white">Rango de Inversión</td>
+                    <td class="py-3 px-4 text-gray-400">$180.000 - $380.000 ARS</td>
+                    <td class="py-3 px-4 font-bold text-gold-400">$24.000 - $42.000 ARS</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- SECCIÓN 3: LABORATORIO CUSTOM (VISTA DEDICADA)          -->
+    <!-- ======================================================== -->
+    <main id="section-laboratorio" class="section-view hidden flex-1 py-14 max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs tracking-widest uppercase font-semibold mb-3 border border-gold-500/20">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Atelier de Perfumería Artesanal
+        </span>
+        <h1 class="font-serif text-4xl sm:text-5xl text-white font-bold mb-3">Laboratorio a Medida</h1>
+        <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">
+          ¿Deseas una fragancia descatalogada, una duplicación con concentración al 40%, o una combinación de notas a tu gusto? Nuestro perfumista preparará tu fórmula en frío.
+        </p>
+      </div>
+
+      <!-- Pasos del Proceso -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 text-xs">
+        <div class="glass-card p-4 rounded-xl text-center">
+          <div class="w-8 h-8 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-2 font-bold">1</div>
+          <h4 class="font-bold text-white mb-1">Pesaje de Esencias</h4>
+          <p class="text-gray-400 text-[11px]">Aceites puros importados de Grasse calibrados en balanza de precisión.</p>
+        </div>
+        <div class="glass-card p-4 rounded-xl text-center">
+          <div class="w-8 h-8 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-2 font-bold">2</div>
+          <h4 class="font-bold text-white mb-1">Maceración en Frío</h4>
+          <p class="text-gray-400 text-[11px]">21 días en oscuridad para integrar las moléculas y eliminar asperezas.</p>
+        </div>
+        <div class="glass-card p-4 rounded-xl text-center">
+          <div class="w-8 h-8 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-2 font-bold">3</div>
+          <h4 class="font-bold text-white mb-1">Filtrado & Envasado</h4>
+          <p class="text-gray-400 text-[11px]">Filtrado criogénico y atomizador italiano de brisa ultra fina.</p>
+        </div>
+      </div>
+
+      <!-- Formulario de Pedido de Laboratorio -->
+      <div class="glass-card p-8 rounded-2xl border-gold-500/40">
+        <h3 class="font-serif text-2xl text-white font-bold mb-2 text-center">Configura tu Fórmula Personalizada</h3>
+        <p class="text-gray-400 text-xs text-center mb-6">El pedido se enviará directamente con todos los detalles al WhatsApp de nuestro perfumista.</p>
+
+        <form onsubmit="handleCustomOrder(event)" class="space-y-4 text-xs">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">1. Fragancia o Notas Solicitadas *</label>
+            <input id="customFragrance" type="text" required placeholder="Ej: Aventus Absolu, Baccarat 540 Extra Fuerte, o notas de Sándalo y Vainilla..." class="w-full bg-noir-900 border border-white/10 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">2. Tamaño de la Botella *</label>
+              <select id="customSize" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+                <option value="50ml ($25.000 ARS)">Frasco 50ml ($25.000 ARS)</option>
+                <option value="100ml ($42.000 ARS)">Frasco 100ml ($42.000 ARS)</option>
+                <option value="Pack Trío 3x10ml ($22.000 ARS)">Pack Trío Decants 3x10ml ($22.000 ARS)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">3. Concentración de Aceite *</label>
+              <select id="customConc" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+                <option value="Intense 33% (Extrait Estándar Aura)">Intense 33% (Extrait de Parfum - Fijación 10-12 hrs)</option>
+                <option value="Beast Mode 40% (Ultra Extrait)">Beast Mode 40% (+Aceite Puro - Fijación 14+ hrs)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">4. Tu Teléfono / WhatsApp para confirmación *</label>
+            <input id="customContact" type="tel" required placeholder="+54 9 11 1234-5678" class="w-full bg-noir-900 border border-white/10 rounded px-3.5 py-2.5 text-white focus:outline-none focus:border-gold-500 text-xs">
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded transition-all flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Enviar Pedido de Laboratorio por WhatsApp
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- SECCIÓN 4: PREGUNTAS FRECUENTES (VISTA DEDICADA)        -->
+    <!-- ======================================================== -->
+    <main id="section-preguntas" class="section-view hidden flex-1 py-14 max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs tracking-widest uppercase font-semibold mb-3 border border-gold-500/20">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> Centro de Dudas & Guía
+        </span>
+        <h1 class="font-serif text-4xl sm:text-5xl text-white font-bold mb-3">Preguntas Frecuentes</h1>
+        <p class="text-gray-400 text-xs sm:text-sm">
+          Resolvemos tus dudas sobre autenticidad, batch codes, envíos seguros y rendimiento olfativo.
+        </p>
+      </div>
+
+      <div class="space-y-4 mb-12">
+        <details class="group glass-card rounded-xl p-5 cursor-pointer">
+          <summary class="flex justify-between items-center font-medium text-white group-hover:text-gold-400 transition-colors text-sm">
+            <span>¿Cómo compruebo que un perfume original es 100% auténtico?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-xs text-gray-300 leading-relaxed border-t border-white/5 pt-3">
+            Cada perfume original incluye su caja sellada con celofán de fábrica y su <strong>código Batch Code</strong> grabado en relieve en la caja y en la base del cristal. Puedes ingresar ese código en sitios públicos auditores como <em>CheckFresh.com</em> o <em>CheckCosmetic.net</em> para ver fecha exacta de fabricación y procedencia del lote.
+          </p>
+        </details>
+
+        <details class="group glass-card rounded-xl p-5 cursor-pointer">
+          <summary class="flex justify-between items-center font-medium text-white group-hover:text-gold-400 transition-colors text-sm">
+            <span>¿Por qué un perfume preparado al 33% dura más que uno comercial?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-xs text-gray-300 leading-relaxed border-t border-white/5 pt-3">
+            La mayoría de las colonias y perfumes comerciales son <em>Eau de Toilette</em> (10-12% de concentración) o <em>Eau de Parfum</em> (15-18%). En Aura Atelier formulamos al <strong>33% de concentración de aceite puro (Extrait de Parfum)</strong>, reduciendo el volumen de alcohol y asegurando que las moléculas aromáticas queden adheridas a los lípidos de tu piel por más de 12 horas.
+          </p>
+        </details>
+
+        <details class="group glass-card rounded-xl p-5 cursor-pointer">
+          <summary class="flex justify-between items-center font-medium text-white group-hover:text-gold-400 transition-colors text-sm">
+            <span>¿Qué es un decant y cómo se extrae?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-xs text-gray-300 leading-relaxed border-t border-white/5 pt-3">
+            Un decant es una fracción del perfume original extraída mediante jeringa esterilizada milimétrica y transferida a un frasco de vidrio de 5ml o 10ml con atomizador de alta presión. Es el método estándar de la comunidad perfumista para probar fragancias costosas antes de invertir en la botella completa.
+          </p>
+        </details>
+
+        <details class="group glass-card rounded-xl p-5 cursor-pointer">
+          <summary class="flex justify-between items-center font-medium text-white group-hover:text-gold-400 transition-colors text-sm">
+            <span>¿Cómo se realizan los envíos y cómo viene protegido el frasco?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-xs text-gray-300 leading-relaxed border-t border-white/5 pt-3">
+            Enviamos a todo el país mediante correo asegurado. Cada frasco se envuelve en plástico de burbujas de alto calibre y caja rígida con aislación térmica para que las variaciones de temperatura del transporte no degraden las notas olfativas de salida.
+          </p>
+        </details>
+      </div>
+
+      <!-- Contact Concierge -->
+      <div class="glass-card p-6 rounded-2xl border-gold-500/30 text-center flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-left">
+          <h4 class="font-serif text-lg font-bold text-white mb-0.5">¿Aún tienes dudas sobre qué aroma va mejor con tu PH?</h4>
+          <p class="text-xs text-gray-400">Escríbele a nuestro sommelier de fragancias por WhatsApp para recibir asesoría personalizada.</p>
+        </div>
+        <a href="https://wa.me/5491100000000?text=Hola%20Aura%20Atelier,%20quisiera%20asesoramiento%20sobre%20una%20fragancia" target="_blank" class="px-5 py-2.5 bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-600/30 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors flex-shrink-0">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Asesoría WhatsApp
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer Tienda -->
+    <footer class="bg-noir-950 border-t border-white/10 py-10 text-gray-400 text-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-gold-400"></i>
+          <span class="font-serif tracking-widest text-white uppercase font-bold">Aura Atelier</span>
+          <span class="text-gray-600">|</span>
+          <span>Originales & Preparados</span>
+        </div>
+        
+        <div class="flex items-center gap-6 text-[11px] uppercase tracking-wider">
+          <button onclick="showSection('catalogo')" class="hover:text-gold-400">Catálogo</button>
+          <button onclick="goToComparativa()" class="hover:text-gold-400">Comparativa</button>
+          <button onclick="showSection('laboratorio')" class="hover:text-gold-400">Laboratorio</button>
+          <button onclick="showSection('preguntas')" class="hover:text-gold-400">Preguntas</button>
+          <button onclick="switchView('admin')" class="text-gold-400 hover:underline flex items-center gap-1">
+            <i data-lucide="settings" class="w-3.5 h-3.5"></i> Administrador
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VISTA 2: PANEL DE ADMINISTRADOR           -->
+  <!-- ========================================== -->
+  <div id="viewAdmin" class="hidden flex-1 flex flex-col bg-noir-900">
+    <!-- Header Admin -->
+    <div class="bg-noir-950 border-b border-white/10 py-5 px-4 sm:px-8">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-xs uppercase tracking-widest text-gold-400 font-semibold">Panel de Control & Inventario Interno</span>
+          </div>
+          <h1 class="font-serif text-3xl font-bold text-white">Gestión de Catálogo, Precios & Stock</h1>
+          <p class="text-xs text-gray-400">El stock físico, costos internos y proveedores son privados y no se muestran al cliente público.</p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <button onclick="openProductForm()" class="flex-1 sm:flex-initial px-4 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Nuevo Perfume
+          </button>
+          <button onclick="resetToDefaultData()" class="px-3 py-2.5 bg-noir-800 hover:bg-noir-700 text-gray-300 border border-white/10 text-xs rounded transition-colors" title="Restaurar datos de muestra originales">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+          <button onclick="switchView('store')" class="px-4 py-2.5 bg-noir-800 hover:bg-noir-700 text-gold-400 border border-gold-500/30 text-xs rounded font-semibold transition-colors flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-4 h-4"></i> Ver Tienda
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full space-y-8">
+      
+      <!-- Métricas del Negocio & Inventario Interno -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-xl">
+          <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Modelos en Catálogo</span>
+          <span id="metricTotal" class="text-2xl font-bold text-white font-serif">0</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border-emerald-500/20">
+          <span class="text-xs text-emerald-400 uppercase tracking-wider block mb-1">Unidades Físicas en Stock</span>
+          <span id="metricTotalStock" class="text-2xl font-bold text-emerald-300 font-serif">0 u.</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border-red-500/30 bg-red-950/10">
+          <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">Agotados (Sin Stock)</span>
+          <span id="metricOutOfStock" class="text-2xl font-bold text-red-400 font-serif">0</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border-gold-500/20">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gold-400 uppercase tracking-wider block mb-1">Valor al Costo</span>
+            <i data-lucide="lock" class="w-3 h-3 text-gold-400/60" title="Dato privado del administrador"></i>
+          </div>
+          <span id="metricCostValue" class="text-2xl font-bold text-gold-300 font-serif">$0</span>
+        </div>
+      </div>
+
+      <!-- Tabla de inventario interno -->
+      <div class="glass-card rounded-xl overflow-hidden border border-white/10">
+        <!-- Header de la tabla con buscador interno -->
+        <div class="p-4 sm:p-5 border-b border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="boxes" class="w-5 h-5 text-gold-400"></i>
+              Control de Inventario Interno & Stock
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">Ajusta el stock físico con los botones (+ / -). Si llega a 0, la tienda pública mostrará automáticamente "No disponible".</p>
+          </div>
+          <div class="relative w-full sm:w-72">
+            <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input 
+              id="adminSearchInput"
+              type="text" 
+              placeholder="Buscar perfume, lote o ubicación..." 
+              oninput="renderAdminTable()"
+              class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
+            />
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-noir-950 text-gray-400 uppercase tracking-wider border-b border-white/5">
+              <tr>
+                <th class="py-3 px-4">Producto</th>
+                <th class="py-3 px-4">Tipo</th>
+                <th class="py-3 px-4">Precio Público</th>
+                <th class="py-3 px-4 bg-noir-900/60 text-gold-400">Stock Interno</th>
+                <th class="py-3 px-4">Costo Interno</th>
+                <th class="py-3 px-4">Ubicación / SKU</th>
+                <th class="py-3 px-4 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody" class="divide-y divide-white/5 text-gray-300">
+              <!-- Renderizado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: CREAR / EDITAR PERFUME (ADMIN)      -->
+  <!-- ========================================== -->
+  <div id="productFormModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-noir-900 border border-gold-500/40 rounded-xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeProductForm()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <h3 id="formModalTitle" class="font-serif text-2xl font-bold text-white">Agregar Nuevo Perfume</h3>
+      </div>
+
+      <form onsubmit="handleSaveProduct(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="editProductId" value="">
+
+        <!-- Nombre y Casa -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Nombre del Perfume *</label>
+            <input id="inputName" type="text" required placeholder="Ej: Sauvage Elixir, Fórmula N° 540..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Marca / Casa / Inspiración *</label>
+            <input id="inputHouse" type="text" required placeholder="Ej: Dior, Inspirado en Baccarat Rouge..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <!-- Tipo, Precio Público y Volumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Tipo de Fragancia *</label>
+            <select id="inputType" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <option value="original">💎 Original Sellado (Batch Code)</option>
+              <option value="preparado">🧪 Fórmula Preparada (33%)</option>
+              <option value="decant">💉 Decant Fraccionado</option>
+            </select>
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Precio Público de Venta ($) *</label>
+            <input id="inputPrice" type="number" min="0" required placeholder="35000" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Tamaño / Volumen *</label>
+            <input id="inputVolume" type="text" required placeholder="Ej: 100 ml, 50 ml, 10 ml" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <!-- SECCIÓN DE INVENTARIO INTERNO (SOLO ADMIN) -->
+        <div class="p-4 bg-noir-950 rounded-lg border border-gold-500/30 space-y-3">
+          <div class="flex items-center gap-2 text-gold-400 font-bold uppercase tracking-wider text-xs">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+            <span>Inventario Interno Confidencial (No visible al cliente)</span>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">
+                Stock Físico (Unidades disponibles) *
+              </label>
+              <input id="inputStock" type="number" min="0" required placeholder="Ej: 10 (0 para agotado)" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <span class="text-[10px] text-gray-500">Si pones 0, el cliente verá "No disponible"</span>
+            </div>
+            <div>
+              <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">
+                Costo Interno Unitario ($)
+              </label>
+              <input id="inputCostPrice" type="number" min="0" placeholder="Ej: 12000" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <span class="text-[10px] text-gray-500">Para calcular el valor total de inventario</span>
+            </div>
+            <div>
+              <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">
+                Ubicación / Estante / SKU
+              </label>
+              <input id="inputLocation" type="text" placeholder="Ej: Estante B-2, Lote 2026" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <span class="text-[10px] text-gray-500">Ubicación en tu depósito o mueble</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Concentración y Familia Olfativa -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Concentración</label>
+            <input id="inputConcentration" type="text" placeholder="Ej: Extrait 33%, Eau de Parfum, Elixir..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Familia Olfativa</label>
+            <input id="inputFamily" type="text" placeholder="Ej: Amaderado Especiado, Ámbar Floral..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <!-- Imagen: Subida de archivo local O pegar URL -->
+        <div class="p-4 bg-noir-950 rounded-lg border border-white/5 space-y-3">
+          <label class="block uppercase tracking-wider text-gold-400 font-semibold">Fotografía del Producto</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+            <!-- Preview -->
+            <div class="w-full h-28 rounded bg-noir-900 border border-white/10 overflow-hidden flex items-center justify-center">
+              <img id="imagePreview" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80" alt="Preview" class="w-full h-full object-cover">
+            </div>
+            <!-- Subir archivo -->
+            <div class="sm:col-span-2 space-y-2">
+              <div>
+                <span class="text-gray-400 block mb-1 text-[11px]">Opción 1: Subir imagen desde tu dispositivo</span>
+                <input type="file" id="inputFileUpload" accept="image/*" onchange="handleFileUpload(event)" class="text-xs text-gray-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gold-500 file:text-black hover:file:bg-gold-400 cursor-pointer">
+              </div>
+              <div>
+                <span class="text-gray-400 block mb-1 text-[11px]">Opción 2: O pegar enlace directo de imagen (URL)</span>
+                <input id="inputImageUrl" type="url" oninput="handleUrlInput(event)" placeholder="https://ejemplo.com/foto.jpg" class="w-full bg-noir-900 border border-white/10 rounded px-3 py-1.5 text-white focus:outline-none focus:border-gold-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pirámide Olfativa -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Notas de Salida (Primeros 15m)</label>
+            <input id="inputTopNotes" type="text" placeholder="Ej: Bergamota, Canela..." class="w-full bg-noir-950 border border-white/10 rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Notas de Corazón (Cuerpo)</label>
+            <input id="inputHeartNotes" type="text" placeholder="Ej: Lavanda, Jazmín..." class="w-full bg-noir-950 border border-white/10 rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Notas de Fondo (Fijación)</label>
+            <input id="inputBaseNotes" type="text" placeholder="Ej: Vainilla, Sándalo, Ámbar..." class="w-full bg-noir-950 border border-white/10 rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Descripción / Ficha Olfativa</label>
+          <textarea id="inputDescription" rows="2" placeholder="Detalla la duración, estela, ocasión de uso o procedencia del lote..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500"></textarea>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+          <button type="button" onclick="closeProductForm()" class="px-4 py-2 bg-noir-800 text-gray-300 hover:text-white rounded uppercase tracking-wider font-semibold">
+            Cancelar
+          </button>
+          <button type="submit" class="px-6 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider rounded transition-all">
+            Guardar Perfume & Stock
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Quick View Modal (Público) -->
+  <div id="productModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-noir-900 border-gold-500/40 rounded-xl max-w-2xl w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeQuickModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Shopping Cart Drawer -->
+  <div id="cartDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-noir-900 border-l border-gold-500/20 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+    <div class="p-6 border-b border-white/10 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-gold-400"></i>
+        <h3 class="font-serif text-xl font-bold text-white">Tu Selección de Aromas</h3>
+      </div>
+      <button onclick="toggleCart()" class="text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div id="cartItemsList" class="p-6 flex-1 overflow-y-auto space-y-4"></div>
+
+    <div class="p-6 border-t border-white/10 bg-noir-950/60">
+      <div class="flex justify-between text-sm text-gray-400 mb-2">
+        <span>Subtotal</span>
+        <span id="cartSubtotal" class="font-medium text-white">$0</span>
+      </div>
+      <div class="flex justify-between text-lg font-bold text-white mb-6 border-t border-white/10 pt-3">
+        <span>Total</span>
+        <span id="cartTotal" class="text-gold-400">$0</span>
+      </div>
+      <button onclick="checkoutViaWhatsApp()" class="w-full py-3 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider text-xs rounded transition-all flex items-center justify-center gap-2">
+        <i data-lucide="message-circle" class="w-4 h-4"></i> Finalizar Pedido por WhatsApp
+      </button>
+      <button onclick="clearCart()" class="w-full mt-2 py-2 text-xs text-gray-500 hover:text-red-400 transition-colors">
+        Vaciar Carrito
+      </button>
+    </div>
+  </div>
+  <div id="cartBackdrop" onclick="toggleCart()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
+
+  <!-- Toast de Notificaciones -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-noir-900 border border-gold-500/50 text-white px-5 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+    <i data-lucide="check-circle" id="toastIcon" class="w-5 h-5 text-gold-400"></i>
+    <span id="toastMsg" class="text-sm font-medium">Acción completada</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: LÓGICA COMPLETA & LOCALSTORAGE -->
+  <!-- ========================================== -->
+  <script>
+    const STORAGE_KEY = 'aura_atelier_perfumes_v3';
+
+    // Semilla inicial con stock interno y costos
+    const DEFAULT_PERFUMES = [
+      {
+        id: 1,
+        name: "Sauvage Elixir",
+        house: "Dior",
+        type: "original",
+        typeLabel: "Original Sellado",
+        volume: "60 ml",
+        concentration: "Elixir Puro",
+        price: 185000,
+        stock: 4,
+        costPrice: 110000,
+        location: "Estante A-1",
+        badge: "💎 Original con Batch",
+        family: "Amaderado Especiado",
+        topNotes: "Canela, Nuez moscada, Cardamomo, Pomelo",
+        heartNotes: "Lavanda de Nyons",
+        baseNotes: "Regaliz, Sándalo, Ámbar, Pachulí",
+        description: "El perfume nocturno por excelencia. Botella original sellada con precinto celofán y código de lote grabado en relieve.",
+        image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 2,
+        name: "Fórmula N° 540 (Rouge Cristal)",
+        house: "Inspirado en Baccarat Rouge 540 Extrait",
+        type: "preparado",
+        typeLabel: "Fórmula Preparada 33%",
+        volume: "100 ml",
+        concentration: "Extrait de Parfum (33% Esencia)",
+        price: 36000,
+        stock: 12,
+        costPrice: 9500,
+        location: "Lab-Frasco-B2",
+        badge: "🧪 Alta Concentración",
+        family: "Ámbar Floral Dulce",
+        topNotes: "Almendra amarga, Azafrán de Cachemira",
+        heartNotes: "Jazmín Grandiflorum de Egipto, Cedro",
+        baseNotes: "Ámbar gris marino, Maderas almizcladas",
+        description: "Elaborado con aceites puros grado A importados de Francia. Proyección hipnótica que llena habitaciones y perdura más de 12 horas.",
+        image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 3,
+        name: "Aventus Royal Heritage",
+        house: "Creed",
+        type: "original",
+        typeLabel: "Original Sellado",
+        volume: "100 ml",
+        concentration: "Millésime EDP",
+        price: 380000,
+        stock: 1, // Última unidad
+        costPrice: 240000,
+        location: "Vitrina Climatizada V-1",
+        badge: "👑 Nicho Original",
+        family: "Chipre Frutal",
+        topNotes: "Piña ahumada, Grosella negra, Bergamota, Manzana",
+        heartNotes: "Abedul, Pachulí, Jazmín de Marruecos, Rosa",
+        baseNotes: "Almizcle, Musgo de roble, Ámbar gris, Vainilla",
+        description: "La joya de la corona de la perfumería nicho inglesa. Cada botella es una oda a la masculinidad victoriosa con estela inconfundible.",
+        image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 4,
+        name: "Fórmula N° 07 (Vainilla & Tabaco)",
+        house: "Inspirado en Tobacco Vanille Tom Ford",
+        type: "preparado",
+        typeLabel: "Fórmula Preparada 33%",
+        volume: "50 ml",
+        concentration: "Extrait de Parfum (33% Esencia)",
+        price: 24500,
+        stock: 0, // ¡AGOTADO DE MUESTRA!
+        costPrice: 6200,
+        location: "Lab-Maceración Lote 4",
+        badge: "🧪 Alta Concentración",
+        family: "Ámbar Especiado Cálido",
+        topNotes: "Hojas de tabaco cubano, Especias aromáticas",
+        heartNotes: "Haba tonka, Flor de tabaco, Vainilla de Madagascar, Cacao",
+        baseNotes: "Frutos secos, Maderas nobles",
+        description: "Opulento, cálido y acogedor como un club privado londinense. Macerado durante 21 días en frío para suavizar la salida alcohólica.",
+        image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 5,
+        name: "Decant 10ml - Angels' Share",
+        house: "Kilian Paris",
+        type: "decant",
+        typeLabel: "Decant Fraccionado",
+        volume: "10 ml (+120 atomizaciones)",
+        concentration: "Eau de Parfum Original",
+        price: 32000,
+        stock: 6,
+        costPrice: 14000,
+        location: "Gaveta Decants D-3",
+        badge: "💉 Decant Original",
+        family: "Ámbar Vainilla Licoroso",
+        topNotes: "Coñac añejo en barrica de roble",
+        heartNotes: "Canela de Ceilán, Haba tonka, Corteza de roble",
+        baseNotes: "Praliné, Vainilla gourmand, Sándalo",
+        description: "Muestra extraída directamente del frasco original Kilian en atomizador de vidrio de alta precisión con tapa dorada.",
+        image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 6,
+        name: "Bleu de Chanel Parfum",
+        house: "Chanel",
+        type: "original",
+        typeLabel: "Original Sellado",
+        volume: "100 ml",
+        concentration: "Parfum Puro",
+        price: 215000,
+        stock: 0, // ¡AGOTADO DE MUESTRA!
+        costPrice: 135000,
+        location: "Agotado - Pedido en aduana",
+        badge: "💎 Original con Batch",
+        family: "Amaderado Aromático",
+        topNotes: "Cáscara de limón, Bergamota, Menta, Artemisia",
+        heartNotes: "Lavanda, Geranio, Notas verdes, Piña",
+        baseNotes: "Sándalo de Nueva Caledonia, Cedro, Ámbar, Tonka",
+        description: "Elegancia atemporal con el frasco magnético original. Código de lote grabado en la parte posterior del cristal.",
+        image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    let catalog = [];
+    let publicFilter = 'all';
+    let cart = [];
+    let currentActiveSection = 'catalogo';
+
+    // Cargar del LocalStorage
+    function loadCatalog() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          catalog = JSON.parse(stored);
+        } catch(e) {
+          catalog = [...DEFAULT_PERFUMES];
+        }
+      } else {
+        catalog = [...DEFAULT_PERFUMES];
+        saveCatalog();
+      }
+    }
+
+    function saveCatalog() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(catalog));
+      updateAllViews();
+    }
+
+    function resetToDefaultData() {
+      if (confirm("¿Deseas restablecer el catálogo con los perfumes de muestra predeterminados y stock de ejemplo?")) {
+        catalog = [...DEFAULT_PERFUMES];
+        saveCatalog();
+        showToast("Catálogo restablecido con stock de muestra", "success");
+      }
+    }
+
+    function formatPrice(num) {
+      return '$' + Number(num || 0).toLocaleString('es-AR');
+    }
+
+    // ==========================================
+    // NAVEGACIÓN ENTRE SECCIONES INDEPENDIENTES
+    // ==========================================
+    function showSection(sectionName) {
+      currentActiveSection = sectionName;
+
+      // Ocultar todas las secciones públicas principales
+      const sections = ['catalogo', 'laboratorio', 'preguntas'];
+      sections.forEach(s => {
+        const el = document.getElementById(`section-${s}`);
+        if (el) el.classList.add('hidden');
+
+        // Desactivar enlace desktop
+        const navBtn = document.getElementById(`nav-${s}`);
+        if (navBtn) {
+          navBtn.classList.remove('nav-tab-active', 'text-gold-400');
+          navBtn.classList.add('text-gray-300');
+        }
+
+        // Desactivar enlace móvil
+        const mobBtn = document.getElementById(`mob-nav-${s}`);
+        if (mobBtn) {
+          mobBtn.classList.remove('text-gold-400', 'font-bold');
+          mobBtn.classList.add('text-gray-400');
+        }
+      });
+
+      // Resetear también el botón de comparativa en el navbar
+      const navComp = document.getElementById('nav-comparativa');
+      if (navComp) {
+        navComp.classList.remove('nav-tab-active', 'text-gold-400');
+        navComp.classList.add('text-gray-300');
+      }
+      const mobComp = document.getElementById('mob-nav-comparativa');
+      if (mobComp) {
+        mobComp.classList.remove('text-gold-400', 'font-bold');
+        mobComp.classList.add('text-gray-400');
+      }
+
+      // Mostrar la sección elegida
+      const activeEl = document.getElementById(`section-${sectionName}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      // Activar enlace desktop
+      const activeNav = document.getElementById(`nav-${sectionName}`);
+      if (activeNav) {
+        activeNav.classList.add('nav-tab-active', 'text-gold-400');
+        activeNav.classList.remove('text-gray-300');
+      }
+
+      // Activar enlace móvil
+      const activeMob = document.getElementById(`mob-nav-${sectionName}`);
+      if (activeMob) {
+        activeMob.classList.add('text-gold-400', 'font-bold');
+        activeMob.classList.remove('text-gray-400');
+      }
+
+      // Si estábamos en modo Admin, regresar a vista Tienda
+      const vStore = document.getElementById('viewStore');
+      if (vStore.classList.contains('hidden')) {
+        switchView('store');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    // Ir a la comparativa al final del catálogo
+    function goToComparativa() {
+      showSection('catalogo');
+      
+      // Activar estilo en el botón de navegación de comparativa
+      const navComp = document.getElementById('nav-comparativa');
+      if (navComp) {
+        navComp.classList.add('nav-tab-active', 'text-gold-400');
+        navComp.classList.remove('text-gray-300');
+      }
+      const mobComp = document.getElementById('mob-nav-comparativa');
+      if (mobComp) {
+        mobComp.classList.add('text-gold-400', 'font-bold');
+        mobComp.classList.remove('text-gray-400');
+      }
+
+      // Desactivar el tab catálogo para reflejar que estamos en comparativa
+      const navCat = document.getElementById('nav-catalogo');
+      if (navCat) navCat.classList.remove('nav-tab-active', 'text-gold-400');
+      const mobCat = document.getElementById('mob-nav-catalogo');
+      if (mobCat) mobCat.classList.remove('text-gold-400', 'font-bold');
+
+      // Scroll suave hacia el bloque comparativo
+      setTimeout(() => {
+        const block = document.getElementById('comparativa-bloque');
+        if (block) {
+          block.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
+    }
+
+    // ==========================================
+    // CAMBIO DE VISTA (Tienda vs Admin)
+    // ==========================================
+    function switchView(view) {
+      const vStore = document.getElementById('viewStore');
+      const vAdmin = document.getElementById('viewAdmin');
+      const btnStore = document.getElementById('tabBtnStore');
+      const btnAdmin = document.getElementById('tabBtnAdmin');
+
+      if (view === 'admin') {
+        vStore.classList.add('hidden');
+        vAdmin.classList.remove('hidden');
+
+        btnAdmin.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm";
+        btnStore.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5";
+        
+        renderAdminTable();
+      } else {
+        vAdmin.classList.add('hidden');
+        vStore.classList.remove('hidden');
+
+        btnStore.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-gold-500 text-black flex items-center gap-1.5 shadow-sm";
+        btnAdmin.className = "px-3 py-1 rounded-full text-xs font-bold transition-all bg-noir-850 text-gray-300 hover:text-gold-400 border border-white/10 flex items-center gap-1.5";
+        
+        showSection(currentActiveSection || 'catalogo');
+        applyPublicFilters();
+      }
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // RENDERIZADO CATÁLOGO PÚBLICO
+    // ==========================================
+    function applyPublicFilters() {
+      const query = document.getElementById('publicSearchInput').value.toLowerCase().trim();
+      let filtered = catalog;
+
+      if (publicFilter !== 'all') {
+        filtered = filtered.filter(p => p.type === publicFilter);
+      }
+
+      if (query !== '') {
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(query) ||
+          p.house.toLowerCase().includes(query) ||
+          (p.family && p.family.toLowerCase().includes(query)) ||
+          (p.topNotes && p.topNotes.toLowerCase().includes(query)) ||
+          (p.baseNotes && p.baseNotes.toLowerCase().includes(query))
+        );
+      }
+
+      renderPublicGrid(filtered);
+      updateBadgeCounts();
+    }
+
+    function setPublicFilter(type) {
+      publicFilter = type;
+      // Asegurarse de que esté visible la sección catálogo
+      showSection('catalogo');
+
+      document.querySelectorAll('.filter-tab').forEach(b => {
+        b.classList.remove('bg-gold-500', 'text-black');
+        b.classList.add('bg-noir-900', 'text-gray-300', 'border', 'border-white/10');
+      });
+
+      const activeBtn = document.getElementById(`btnFilter-${type}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-noir-900', 'text-gray-300', 'border', 'border-white/10');
+        activeBtn.classList.add('bg-gold-500', 'text-black');
+      }
+
+      applyPublicFilters();
+    }
+
+    function renderPublicGrid(items) {
+      const grid = document.getElementById('publicProductsGrid');
+      const empty = document.getElementById('publicEmptyState');
+
+      if (!grid) return;
+
+      if (items.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = items.map(p => {
+        const isOriginal = p.type === 'original';
+        const isPreparado = p.type === 'preparado';
+        const isAvailable = (Number(p.stock) || 0) > 0;
+        const isLowStock = isAvailable && p.stock <= 3;
+        
+        let badgeColor = isOriginal 
+          ? 'bg-blue-900/50 text-blue-300 border-blue-500/40' 
+          : (isPreparado ? 'bg-gold-500/25 text-gold-300 border-gold-500/40' : 'bg-purple-900/50 text-purple-300 border-purple-500/40');
+
+        return `
+          <div class="glass-card rounded-xl overflow-hidden flex flex-col group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/60 relative ${!isAvailable ? 'border-red-500/20 opacity-90' : ''}">
+            
+            <!-- Imagen con overlay si está agotado -->
+            <div class="relative h-60 w-full overflow-hidden bg-noir-900">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 ${isAvailable ? 'group-hover:scale-105' : 'grayscale contrast-75 brightness-75'}">
+              
+              <!-- Badge de categoría -->
+              <span class="absolute top-3 left-3 text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md ${badgeColor}">
+                ${p.badge || (isOriginal ? '💎 Original' : '🧪 Preparado')}
+              </span>
+
+              <!-- Ojo para ver ficha técnica -->
+              <button onclick="openQuickModal(${p.id})" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-noir-900/80 hover:bg-gold-500 hover:text-black text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10" title="Ver notas olfativas">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+
+              <!-- OVERLAY VISIBLE DE NO DISPONIBLE -->
+              ${!isAvailable ? `
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-4 text-center">
+                  <span class="px-3 py-1.5 rounded bg-red-600/90 text-white font-bold tracking-widest uppercase text-xs shadow-lg flex items-center gap-1.5 mb-1">
+                    <i data-lucide="alert-octagon" class="w-4 h-4"></i> No disponible
+                  </span>
+                  <span class="text-[11px] text-gray-300 font-medium">Agotado temporalmente</span>
+                </div>
+              ` : ''}
+
+              <!-- Cartel de últimas unidades -->
+              ${isLowStock ? `
+                <div class="absolute bottom-2 left-2 right-2 bg-amber-500/90 text-black text-[10px] font-bold px-2 py-0.5 rounded text-center tracking-wider uppercase backdrop-blur-sm">
+                  ⚡ ¡Últimas unidades disponibles!
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                  <span class="tracking-widest uppercase font-semibold text-gold-400/90 truncate max-w-[150px]">${p.house}</span>
+                  <span>${p.volume}</span>
+                </div>
+                <h3 class="font-serif text-lg font-bold text-white group-hover:text-gold-400 transition-colors line-clamp-1 mb-1">
+                  ${p.name}
+                </h3>
+                <p class="text-xs text-gray-400 line-clamp-2 mb-3">
+                  ${p.description || 'Fragancia exclusiva seleccionada por Aura Atelier.'}
+                </p>
+                ${p.family ? `<div class="inline-block text-[11px] bg-white/5 text-gray-300 px-2 py-0.5 rounded border border-white/5 mb-4">${p.family}</div>` : ''}
+              </div>
+
+              <!-- Precio y Botón Agregar (o Agotado) -->
+              <div class="pt-3 border-t border-white/5 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-gray-500 uppercase block tracking-wider font-semibold">Precio</span>
+                  <span class="text-base font-bold ${isAvailable ? 'text-white' : 'text-gray-500 line-through'}">${formatPrice(p.price)}</span>
+                </div>
+
+                ${isAvailable ? `
+                  <button onclick="addToCart(${p.id})" class="px-3.5 py-2 bg-noir-800 hover:bg-gold-500 hover:text-black border border-gold-500/30 rounded text-xs font-semibold uppercase tracking-wider text-gold-400 transition-all flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar
+                  </button>
+                ` : `
+                  <button onclick="handleOutOfStockClick('${p.name}')" class="px-3.5 py-2 bg-noir-800 text-gray-500 border border-white/5 rounded text-xs font-semibold uppercase tracking-wider cursor-not-allowed flex items-center gap-1.5" title="Este perfume no está disponible actualmente">
+                    <i data-lucide="ban" class="w-3.5 h-3.5 text-red-400"></i> Agotado
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function updateBadgeCounts() {
+      const cAll = document.getElementById('count-all');
+      const cOrig = document.getElementById('count-original');
+      const cPrep = document.getElementById('count-preparado');
+      const cDec = document.getElementById('count-decant');
+
+      if (cAll) cAll.innerText = catalog.length;
+      if (cOrig) cOrig.innerText = catalog.filter(p => p.type === 'original').length;
+      if (cPrep) cPrep.innerText = catalog.filter(p => p.type === 'preparado').length;
+      if (cDec) cDec.innerText = catalog.filter(p => p.type === 'decant').length;
+    }
+
+    function handleOutOfStockClick(name) {
+      showToast(`"${name}" no está disponible en este momento.`, "warning");
+    }
+
+    // ==========================================
+    // RENDERIZADO PANEL ADMINISTRADOR (INVENTARIO)
+    // ==========================================
+    function renderAdminTable() {
+      const tbody = document.getElementById('adminTableBody');
+      const searchInput = document.getElementById('adminSearchInput');
+      if (!tbody || !searchInput) return;
+
+      const search = searchInput.value.toLowerCase().trim();
+
+      // Métricas de negocio
+      const totalModels = catalog.length;
+      const totalUnits = catalog.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
+      const outOfStockCount = catalog.filter(p => (Number(p.stock) || 0) <= 0).length;
+      const totalCost = catalog.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.costPrice) || 0)), 0);
+
+      document.getElementById('metricTotal').innerText = totalModels;
+      document.getElementById('metricTotalStock').innerText = `${totalUnits} u.`;
+      document.getElementById('metricOutOfStock').innerText = outOfStockCount;
+      document.getElementById('metricCostValue').innerText = formatPrice(totalCost);
+
+      let filtered = catalog;
+      if (search !== '') {
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(search) || 
+          p.house.toLowerCase().includes(search) ||
+          p.type.toLowerCase().includes(search) ||
+          (p.location && p.location.toLowerCase().includes(search))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-8 text-center text-gray-500">
+              No se encontraron fragancias en el inventario.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
+        const stock = Number(p.stock) || 0;
+        const cost = Number(p.costPrice) || 0;
+        
+        let typeBadge = p.type === 'original' 
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-900/40 text-blue-300 border border-blue-500/30">Original</span>'
+          : (p.type === 'preparado' 
+            ? '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-gold-500/20 text-gold-300 border border-gold-500/30">Preparado 33%</span>'
+            : '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-900/40 text-purple-300 border border-purple-500/30">Decant</span>');
+
+        let stockBadge = '';
+        if (stock === 0) {
+          stockBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-900/60 text-red-300 border border-red-500/40 flex items-center gap-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Agotado (0 u.)</span>`;
+        } else if (stock <= 3) {
+          stockBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-900/40 text-amber-300 border border-amber-500/40 flex items-center gap-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Bajo (${stock} u.)</span>`;
+        } else {
+          stockBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-900/40 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> En Stock (${stock} u.)</span>`;
+        }
+
+        return `
+          <tr class="hover:bg-white/[0.02] transition-colors ${stock === 0 ? 'bg-red-950/5' : ''}">
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-3">
+                <img src="${p.image}" alt="${p.name}" class="w-10 h-10 object-cover rounded border border-white/10 flex-shrink-0 ${stock === 0 ? 'grayscale' : ''}">
+                <div>
+                  <div class="font-bold text-white flex items-center gap-1.5">
+                    ${p.name}
+                    ${stock === 0 ? '<span class="text-[9px] bg-red-500/20 text-red-400 px-1 rounded">Agotado</span>' : ''}
+                  </div>
+                  <div class="text-[11px] text-gray-400">${p.house} • ${p.volume}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-4">${typeBadge}</td>
+            <td class="py-3 px-4 font-bold text-white">${formatPrice(p.price)}</td>
+            
+            <!-- Control Rápido de Stock Interno -->
+            <td class="py-3 px-4 bg-noir-900/40">
+              <div class="space-y-1">
+                ${stockBadge}
+                <div class="flex items-center gap-1.5">
+                  <button onclick="quickAdjustStock(${p.id}, -1)" class="w-6 h-6 rounded bg-noir-800 hover:bg-noir-700 text-gray-300 flex items-center justify-center font-bold text-xs border border-white/5 hover:border-gold-500/40" title="Restar 1 unidad">-</button>
+                  <span class="w-8 text-center font-bold text-xs text-white">${stock}</span>
+                  <button onclick="quickAdjustStock(${p.id}, 1)" class="w-6 h-6 rounded bg-noir-800 hover:bg-noir-700 text-gray-300 flex items-center justify-center font-bold text-xs border border-white/5 hover:border-gold-500/40" title="Sumar 1 unidad">+</button>
+                </div>
+              </div>
+            </td>
+
+            <!-- Costo Interno (Confidencial) -->
+            <td class="py-3 px-4 text-gray-300">
+              <div class="font-medium text-gold-400/90">${formatPrice(cost)}</div>
+              <div class="text-[10px] text-gray-500">Margen: ${formatPrice(p.price - cost)}</div>
+            </td>
+
+            <!-- Ubicación interna / SKU -->
+            <td class="py-3 px-4 text-gray-400">
+              <span class="px-2 py-0.5 bg-noir-950 rounded border border-white/5 text-[11px] text-gray-300">
+                ${p.location || 'Depósito General'}
+              </span>
+            </td>
+
+            <!-- Acciones -->
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button onclick="editProduct(${p.id})" class="p-1.5 bg-noir-800 hover:bg-gold-500 hover:text-black rounded text-gray-300 transition-colors" title="Editar producto y stock">
+                  <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+                <button onclick="deleteProduct(${p.id})" class="p-1.5 bg-noir-800 hover:bg-red-500 hover:text-white rounded text-gray-400 transition-colors" title="Eliminar">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function quickAdjustStock(id, delta) {
+      const item = catalog.find(p => p.id === id);
+      if (!item) return;
+
+      const current = Number(item.stock) || 0;
+      const updated = Math.max(0, current + delta);
+      item.stock = updated;
+
+      saveCatalog();
+      if (updated === 0) {
+        showToast(`"${item.name}" ahora está sin stock (No disponible)`, "warning");
+      } else {
+        showToast(`Stock de "${item.name}": ${updated} unidades`, "info");
+      }
+    }
+
+    // ==========================================
+    // GESTIÓN CRUD DE PRODUCTOS (ADMIN)
+    // ==========================================
+    let currentImageBase64 = '';
+
+    function openProductForm(editId = null) {
+      const modal = document.getElementById('productFormModal');
+      const title = document.getElementById('formModalTitle');
+      const preview = document.getElementById('imagePreview');
+      currentImageBase64 = '';
+
+      if (editId) {
+        const item = catalog.find(p => p.id === editId);
+        if (!item) return;
+
+        title.innerText = "Modificar Perfume & Inventario";
+        document.getElementById('editProductId').value = item.id;
+        document.getElementById('inputName').value = item.name;
+        document.getElementById('inputHouse').value = item.house;
+        document.getElementById('inputType').value = item.type;
+        document.getElementById('inputPrice').value = item.price;
+        document.getElementById('inputVolume').value = item.volume;
+        document.getElementById('inputStock').value = item.stock !== undefined ? item.stock : 5;
+        document.getElementById('inputCostPrice').value = item.costPrice || '';
+        document.getElementById('inputLocation').value = item.location || '';
+        document.getElementById('inputConcentration').value = item.concentration || '';
+        document.getElementById('inputFamily').value = item.family || '';
+        document.getElementById('inputImageUrl').value = item.image || '';
+        document.getElementById('inputTopNotes').value = item.topNotes || '';
+        document.getElementById('inputHeartNotes').value = item.heartNotes || '';
+        document.getElementById('inputBaseNotes').value = item.baseNotes || '';
+        document.getElementById('inputDescription').value = item.description || '';
+        preview.src = item.image;
+      } else {
+        title.innerText = "Agregar Nuevo Perfume";
+        document.getElementById('editProductId').value = '';
+        document.getElementById('inputName').value = '';
+        document.getElementById('inputHouse').value = '';
+        document.getElementById('inputType').value = 'preparado';
+        document.getElementById('inputPrice').value = '';
+        document.getElementById('inputVolume').value = '100 ml';
+        document.getElementById('inputStock').value = '10';
+        document.getElementById('inputCostPrice').value = '';
+        document.getElementById('inputLocation').value = 'Estante Lab-1';
+        document.getElementById('inputConcentration').value = 'Extrait de Parfum (33% Esencia)';
+        document.getElementById('inputFamily').value = '';
+        document.getElementById('inputImageUrl').value = 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80';
+        document.getElementById('inputTopNotes').value = '';
+        document.getElementById('inputHeartNotes').value = '';
+        document.getElementById('inputBaseNotes').value = '';
+        document.getElementById('inputDescription').value = '';
+        preview.src = 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80';
+      }
+
+      document.getElementById('inputFileUpload').value = '';
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeProductForm() {
+      document.getElementById('productFormModal').classList.add('hidden');
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentImageBase64 = e.target.result;
+        document.getElementById('imagePreview').src = currentImageBase64;
+        document.getElementById('inputImageUrl').value = '';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleUrlInput(event) {
+      const url = event.target.value.trim();
+      if (url) {
+        currentImageBase64 = '';
+        document.getElementById('imagePreview').src = url;
+      }
+    }
+
+    function handleSaveProduct(e) {
+      e.preventDefault();
+
+      const editId = document.getElementById('editProductId').value;
+      const name = document.getElementById('inputName').value.trim();
+      const house = document.getElementById('inputHouse').value.trim();
+      const type = document.getElementById('inputType').value;
+      const price = Number(document.getElementById('inputPrice').value);
+      const volume = document.getElementById('inputVolume').value.trim();
+      const stock = Math.max(0, parseInt(document.getElementById('inputStock').value) || 0);
+      const costPrice = Number(document.getElementById('inputCostPrice').value) || 0;
+      const location = document.getElementById('inputLocation').value.trim() || 'Depósito General';
+      const concentration = document.getElementById('inputConcentration').value.trim();
+      const family = document.getElementById('inputFamily').value.trim();
+      const urlImg = document.getElementById('inputImageUrl').value.trim();
+      const topNotes = document.getElementById('inputTopNotes').value.trim();
+      const heartNotes = document.getElementById('inputHeartNotes').value.trim();
+      const baseNotes = document.getElementById('inputBaseNotes').value.trim();
+      const description = document.getElementById('inputDescription').value.trim();
+
+      const finalImage = currentImageBase64 || urlImg || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80';
+
+      let badge = '🧪 Preparado 33%';
+      if (type === 'original') badge = '💎 Original con Batch';
+      if (type === 'decant') badge = '💉 Decant Original';
+
+      if (editId) {
+        const index = catalog.findIndex(p => p.id === Number(editId));
+        if (index !== -1) {
+          catalog[index] = {
+            ...catalog[index],
+            name,
+            house,
+            type,
+            typeLabel: type === 'original' ? 'Original Sellado' : (type === 'preparado' ? 'Fórmula Preparada 33%' : 'Decant Fraccionado'),
+            price,
+            volume,
+            stock,
+            costPrice,
+            location,
+            concentration,
+            family,
+            badge,
+            image: finalImage,
+            topNotes,
+            heartNotes,
+            baseNotes,
+            description
+          };
+          showToast(`"${name}" actualizado (Stock: ${stock} u.)`, "success");
+        }
+      } else {
+        const newPerfume = {
+          id: Date.now(),
+          name,
+          house,
+          type,
+          typeLabel: type === 'original' ? 'Original Sellado' : (type === 'preparado' ? 'Fórmula Preparada 33%' : 'Decant Fraccionado'),
+          price,
+          volume,
+          stock,
+          costPrice,
+          location,
+          concentration,
+          family,
+          badge,
+          image: finalImage,
+          topNotes,
+          heartNotes,
+          baseNotes,
+          description
+        };
+        catalog.unshift(newPerfume);
+        showToast(`"${name}" guardado exitosamente con ${stock} u.`, "success");
+      }
+
+      saveCatalog();
+      closeProductForm();
+    }
+
+    function editProduct(id) {
+      openProductForm(id);
+    }
+
+    function deleteProduct(id) {
+      const item = catalog.find(p => p.id === id);
+      if (!item) return;
+
+      if (confirm(`¿Estás seguro de eliminar "${item.name}" del catálogo?`)) {
+        catalog = catalog.filter(p => p.id !== id);
+        cart = cart.filter(c => c.id !== id);
+        saveCatalog();
+        updateCartUI();
+        showToast(`"${item.name}" fue eliminado`, "info");
+      }
+    }
+
+    function updateAllViews() {
+      renderAdminTable();
+      applyPublicFilters();
+    }
+
+    // ==========================================
+    // QUICK VIEW MODAL (DETALLE PÚBLICO)
+    // ==========================================
+    function openQuickModal(id) {
+      const p = catalog.find(item => item.id === id);
+      if (!p) return;
+
+      const modal = document.getElementById('productModal');
+      const content = document.getElementById('modalContent');
+      const isAvailable = (Number(p.stock) || 0) > 0;
+
+      content.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div class="rounded-lg overflow-hidden bg-noir-950 border border-white/10 h-72 relative">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover ${!isAvailable ? 'grayscale contrast-75 brightness-75' : ''}">
+            ${!isAvailable ? `
+              <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                <span class="px-3 py-1 bg-red-600 text-white font-bold uppercase text-xs rounded">No disponible</span>
+              </div>
+            ` : ''}
+          </div>
+          <div>
+            <div class="text-xs uppercase font-semibold tracking-widest text-gold-400 mb-1">${p.house}</div>
+            <h2 class="font-serif text-2xl font-bold text-white mb-1">${p.name}</h2>
+            <div class="text-xs text-gray-400 mb-3">${p.volume} • <span class="text-gray-200 font-medium">${p.concentration || ''}</span></div>
+            
+            ${!isAvailable ? `
+              <div class="p-3 bg-red-950/40 border border-red-500/30 text-red-300 rounded text-xs flex items-center gap-2 mb-4">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 flex-shrink-0"></i>
+                <span>Este perfume no se encuentra disponible temporalmente.</span>
+              </div>
+            ` : ''}
+
+            <p class="text-xs text-gray-300 mb-4 leading-relaxed">${p.description || 'Fragancia artesanal de alta fijación.'}</p>
+            
+            <div class="space-y-2 bg-noir-950/70 p-3 rounded-lg border border-white/5 mb-5 text-xs">
+              ${p.topNotes ? `<div><strong class="text-gold-400 block uppercase tracking-wider text-[10px]">🌿 Notas de Salida:</strong> <span class="text-gray-300">${p.topNotes}</span></div>` : ''}
+              ${p.heartNotes ? `<div><strong class="text-gold-400 block uppercase tracking-wider text-[10px]">🌸 Notas de Corazón:</strong> <span class="text-gray-300">${p.heartNotes}</span></div>` : ''}
+              ${p.baseNotes ? `<div><strong class="text-gold-400 block uppercase tracking-wider text-[10px]">🪵 Notas de Fondo:</strong> <span class="text-gray-300">${p.baseNotes}</span></div>` : ''}
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+              <div>
+                <span class="text-[10px] text-gray-400 block uppercase">Precio</span>
+                <span class="text-xl font-bold ${isAvailable ? 'text-gold-400' : 'text-gray-500 line-through'}">${formatPrice(p.price)}</span>
+              </div>
+
+              ${isAvailable ? `
+                <button onclick="addToCart(${p.id}); closeQuickModal();" class="px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-black font-bold uppercase text-xs tracking-wider rounded transition-colors flex items-center gap-1.5 shadow-md">
+                  <i data-lucide="shopping-bag" class="w-4 h-4"></i> Añadir a la Bolsa
+                </button>
+              ` : `
+                <a href="https://wa.me/5491100000000?text=${encodeURIComponent('¡Hola Aura Atelier! Me interesa saber cuándo tendrán disponible el perfume: ' + p.name)}" target="_blank" class="px-4 py-2.5 bg-noir-800 hover:bg-noir-750 text-gold-400 border border-gold-500/40 font-bold uppercase text-xs tracking-wider rounded transition-colors flex items-center gap-1.5">
+                  <i data-lucide="bell" class="w-4 h-4"></i> Consultar Reposición
+                </a>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeQuickModal() {
+      document.getElementById('productModal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // CARRITO Y CONTROL DE STOCK
+    // ==========================================
+    function addToCart(id) {
+      const p = catalog.find(item => item.id === id);
+      if (!p) return;
+
+      const stock = Number(p.stock) || 0;
+      if (stock <= 0) {
+        showToast(`Lo sentimos, "${p.name}" no está disponible actualmente.`, "error");
+        return;
+      }
+
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        if (existing.qty >= stock) {
+          showToast(`No puedes agregar más. Solo quedan ${stock} unidades disponibles.`, "warning");
+          return;
+        }
+        existing.qty += 1;
+      } else {
+        cart.push({ ...p, qty: 1 });
+      }
+
+      showToast(`"${p.name}" agregado a tu bolsa`, "success");
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const countBadge = document.getElementById('cartCountBadge');
+      const itemsList = document.getElementById('cartItemsList');
+      const subtotalEl = document.getElementById('cartSubtotal');
+      const totalEl = document.getElementById('cartTotal');
+
+      const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+      countBadge.innerText = totalItems;
+
+      if (cart.length === 0) {
+        itemsList.innerHTML = `
+          <div class="text-center py-16 text-gray-500">
+            <i data-lucide="shopping-bag" class="w-10 h-10 mx-auto mb-3 text-gray-600"></i>
+            <p class="text-sm">Tu bolsa de aromas está vacía</p>
+          </div>
+        `;
+        subtotalEl.innerText = '$0';
+        totalEl.innerText = '$0';
+        lucide.createIcons();
+        return;
+      }
+
+      let subtotal = 0;
+      itemsList.innerHTML = cart.map(item => {
+        const itemTotal = item.price * item.qty;
+        subtotal += itemTotal;
+        const currentStock = Number(item.stock) || 0;
+
+        return `
+          <div class="flex items-center gap-3 bg-noir-850 p-3 rounded border border-white/5">
+            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded">
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-semibold text-white truncate">${item.name}</h4>
+              <p class="text-xs text-gold-400/90">${formatPrice(item.price)}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 bg-noir-750 text-gray-300 rounded flex items-center justify-center text-xs hover:bg-noir-700">-</button>
+                <span class="text-xs font-semibold">${item.qty}</span>
+                <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 bg-noir-750 text-gray-300 rounded flex items-center justify-center text-xs hover:bg-noir-700" ${item.qty >= currentStock ? 'disabled title="Stock máximo alcanzado"' : ''}>+</button>
+              </div>
+            </div>
+            <button onclick="removeFromCart(${item.id})" class="text-gray-500 hover:text-red-400 p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      subtotalEl.innerText = formatPrice(subtotal);
+      totalEl.innerText = formatPrice(subtotal);
+      lucide.createIcons();
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+
+      const product = catalog.find(p => p.id === id);
+      const stock = product ? (Number(product.stock) || 0) : 0;
+
+      if (delta > 0 && item.qty >= stock) {
+        showToast(`Stock máximo disponible alcanzado (${stock} u.)`, "warning");
+        return;
+      }
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== id);
+      }
+      updateCartUI();
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(i => i.id !== id);
+      updateCartUI();
+    }
+
+    function clearCart() {
+      cart = [];
+      updateCartUI();
+    }
+
+    function toggleCart() {
+      const drawer = document.getElementById('cartDrawer');
+      const backdrop = document.getElementById('cartBackdrop');
+      const isOpen = !drawer.classList.contains('translate-x-full');
+      if (isOpen) {
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      } else {
+        drawer.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+      }
+    }
+
+    function checkoutViaWhatsApp() {
+      if (cart.length === 0) {
+        alert("Agrega al menos una fragancia a la bolsa.");
+        return;
+      }
+
+      let message = "¡Hola Aura Atelier! Me gustaría realizar el siguiente pedido:\n\n";
+      let total = 0;
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        message += `${index + 1}. ${item.name} (${item.volume}) x${item.qty} = ${formatPrice(itemTotal)}\n`;
+      });
+
+      message += `\n*Total: ${formatPrice(total)}*\n¿Tienen disponibilidad para coordinar entrega?`;
+      window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    function handleCustomOrder(e) {
+      e.preventDefault();
+      const fragrance = document.getElementById('customFragrance').value;
+      const size = document.getElementById('customSize').value;
+      const conc = document.getElementById('customConc').value;
+      const contact = document.getElementById('customContact').value;
+
+      const msg = `¡Hola Aura Atelier! Quisiera cotizar una fórmula preparada de laboratorio:\n- Aroma buscado: ${fragrance}\n- Tamaño: ${size}\n- Concentración: ${conc}\n- Teléfono: ${contact}`;
+      window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').innerText = msg;
+      
+      if (type === "error" || type === "warning") {
+        toast.className = "fixed bottom-6 right-6 z-50 transition-all duration-300 pointer-events-none bg-noir-900 border border-red-500/60 text-red-200 px-5 py-3 rounded-lg shadow-2xl flex items-center gap-3";
+      } else {
+        toast.className = "fixed bottom-6 right-6 z-50 transition-all duration-300 pointer-events-none bg-noir-900 border border-gold-500/50 text-white px-5 py-3 rounded-lg shadow-2xl flex items-center gap-3";
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3200);
+    }
+
+    // Inicialización al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCatalog();
+      updateAllViews();
+      showSection('catalogo');
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
