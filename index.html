@@ -126,6 +126,35 @@
       object-fit: cover !important;
     }
 
+        /* Estilos de pestañas administrativas */
+    .admin-tab-btn {
+      color: #9ca3af;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background-color: rgba(20, 20, 24, 0.6);
+      transition: all 0.2s ease;
+    }
+    .admin-tab-btn:hover {
+      color: #f3f4f6;
+      border-color: rgba(212, 175, 55, 0.3);
+      background-color: rgba(34, 34, 43, 0.8);
+    }
+    .admin-tab-btn.active {
+      color: #d4af37 !important;
+      border-color: rgba(212, 175, 55, 0.6) !important;
+      background-color: rgba(212, 175, 55, 0.12) !important;
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+    }
+
+    /* Badges de tipos de materiales */
+    .badge-mat-esencias { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-mat-frascos { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-mat-atomizadores { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-mat-alcohol { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-mat-empaque { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-mat-laboratorio { background: rgba(20, 184, 166, 0.15); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.3); }
+    .badge-mat-otros { background: rgba(156, 163, 175, 0.15); color: #e5e7eb; border: 1px solid rgba(156, 163, 175, 0.3); }
+
     /* Scrollbar estilizada */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #0c0c0e; }
@@ -623,24 +652,22 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span class="text-xs uppercase tracking-widest text-gold-400 font-semibold">Panel de Control & Inventario Interno</span>
+            <span class="text-xs uppercase tracking-widest text-gold-400 font-semibold">Sistema de Gestión & Finanzas Aura</span>
           </div>
-          <h1 class="font-serif text-3xl font-bold text-white">Gestión de Catálogo, Precios & Stock</h1>
-          <p class="text-xs text-gray-400">El stock físico, costos internos y proveedores son privados y no se muestran al cliente público.</p>
+          <h1 class="font-serif text-3xl font-bold text-white">Panel Administrativo</h1>
+          <p class="text-xs text-gray-400">Control de inventario, registro de ventas, compras de materiales y balance de utilidad.</p>
         </div>
 
-        <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
-          <button onclick="openProductForm()" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i> Nuevo Perfume
+        <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+          <button id="adminHeaderActionBtn" onclick="handleAdminHeaderAction()" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2 transition-all">
+            <i id="adminHeaderActionIcon" data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span id="adminHeaderActionText">Nuevo Perfume</span>
           </button>
           <button onclick="openCredentialsModal()" class="px-3 py-2 bg-noir-800 hover:bg-noir-750 text-gray-300 border border-white/10 text-xs rounded transition-colors flex items-center gap-1.5" title="Cambiar usuario y contraseña de administrador">
             <i data-lucide="key-round" class="w-3.5 h-3.5 text-gold-400"></i> Clave
           </button>
-          <button onclick="resetToDefaultData()" class="px-3 py-2 bg-noir-800 hover:bg-noir-700 text-gray-300 border border-white/10 text-xs rounded transition-colors" title="Restaurar datos de muestra originales">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-          </button>
           <button onclick="switchView('store')" class="px-3.5 py-2 bg-noir-800 hover:bg-noir-750 text-gold-400 border border-gold-500/30 text-xs rounded font-semibold transition-colors flex items-center gap-1.5">
-            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Tienda
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Ver Tienda
           </button>
           <button onclick="logoutAdmin()" class="px-3 py-2 bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-500/30 text-xs rounded transition-colors flex items-center gap-1.5" title="Cerrar sesión de administrador">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Salir
@@ -649,73 +676,377 @@
       </div>
     </div>
 
+    <!-- Admin Subnavigation Bar -->
+    <div class="bg-noir-950/90 border-b border-white/10 px-4 sm:px-8 sticky top-0 z-20 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto py-2.5">
+        <button id="adminTabBtn-inventory" onclick="switchAdminTab('inventory')" class="admin-tab-btn active px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-all whitespace-nowrap">
+          <i data-lucide="boxes" class="w-4 h-4 text-gold-400"></i>
+          <span>Inventario & Stock</span>
+        </button>
+        <button id="adminTabBtn-sales" onclick="switchAdminTab('sales')" class="admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border border-transparent text-gray-400 hover:text-white transition-all whitespace-nowrap">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400"></i>
+          <span>Ventas & Ingresos</span>
+        </button>
+        <button id="adminTabBtn-expenses" onclick="switchAdminTab('expenses')" class="admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border border-transparent text-gray-400 hover:text-white transition-all whitespace-nowrap">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-amber-400"></i>
+          <span>Gastos en Materiales</span>
+        </button>
+        <button id="adminTabBtn-balance" onclick="switchAdminTab('balance')" class="admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border border-transparent text-gray-400 hover:text-white transition-all whitespace-nowrap">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-blue-400"></i>
+          <span>Balance & Utilidad</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Admin Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full space-y-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
       
-      <!-- Métricas del Negocio & Inventario Interno -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="glass-card p-4 rounded-xl">
-          <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Modelos en Catálogo</span>
-          <span id="metricTotal" class="text-2xl font-bold text-white font-serif">0</span>
-        </div>
-        <div class="glass-card p-4 rounded-xl border-emerald-500/20">
-          <span class="text-xs text-emerald-400 uppercase tracking-wider block mb-1">Unidades Físicas en Stock</span>
-          <span id="metricTotalStock" class="text-2xl font-bold text-emerald-300 font-serif">0 u.</span>
-        </div>
-        <div class="glass-card p-4 rounded-xl border-red-500/30 bg-red-950/10">
-          <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">Agotados (Sin Stock)</span>
-          <span id="metricOutOfStock" class="text-2xl font-bold text-red-400 font-serif">0</span>
-        </div>
-        <div class="glass-card p-4 rounded-xl border-gold-500/20">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-gold-400 uppercase tracking-wider block mb-1">Valor al Costo</span>
-            <i data-lucide="lock" class="w-3 h-3 text-gold-400/60" title="Dato privado del administrador"></i>
+      <!-- TAB 1: INVENTARIO & STOCK -->
+      <div id="adminPanel-inventory" class="space-y-8">
+        <!-- Métricas del Negocio & Inventario Interno -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass-card p-4 rounded-xl">
+            <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Modelos en Catálogo</span>
+            <span id="metricTotal" class="text-2xl font-bold text-white font-serif">0</span>
           </div>
-          <span id="metricCostValue" class="text-2xl font-bold text-gold-300 font-serif">$0</span>
+          <div class="glass-card p-4 rounded-xl border-emerald-500/20">
+            <span class="text-xs text-emerald-400 uppercase tracking-wider block mb-1">Unidades Físicas en Stock</span>
+            <span id="metricTotalStock" class="text-2xl font-bold text-emerald-300 font-serif">0 u.</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-red-500/30 bg-red-950/10">
+            <span class="text-xs text-red-400 uppercase tracking-wider block mb-1">Agotados (Sin Stock)</span>
+            <span id="metricOutOfStock" class="text-2xl font-bold text-red-400 font-serif">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-gold-500/20">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gold-400 uppercase tracking-wider block mb-1">Valor al Costo</span>
+              <i data-lucide="lock" class="w-3 h-3 text-gold-400/60" title="Dato privado del administrador"></i>
+            </div>
+            <span id="metricCostValue" class="text-2xl font-bold text-gold-300 font-serif">$0</span>
+          </div>
+        </div>
+
+        <!-- Tabla de inventario interno -->
+        <div class="glass-card rounded-xl overflow-hidden border border-white/10">
+          <div class="p-4 sm:p-5 border-b border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h2 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="boxes" class="w-5 h-5 text-gold-400"></i>
+                Control de Inventario Interno & Stock
+              </h2>
+              <p class="text-xs text-gray-400 mt-0.5">Ajusta el stock físico con los botones (+ / -). Si llega a 0, la tienda mostrará automáticamente "No disponible".</p>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <div class="relative w-full sm:w-72">
+                <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input 
+                  id="adminSearchInput"
+                  type="text" 
+                  placeholder="Buscar perfume, lote o ubicación..." 
+                  oninput="renderAdminTable()"
+                  class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
+                />
+              </div>
+              <button onclick="resetToDefaultData()" class="p-2 bg-noir-800 hover:bg-noir-700 text-gray-400 hover:text-white border border-white/10 text-xs rounded transition-colors" title="Restaurar datos originales de muestra">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-noir-950 text-gray-400 uppercase tracking-wider border-b border-white/5">
+                <tr>
+                  <th class="py-3 px-4">Producto</th>
+                  <th class="py-3 px-4">Tipo</th>
+                  <th class="py-3 px-4">Precio Público</th>
+                  <th class="py-3 px-4 bg-noir-900/60 text-gold-400">Stock Interno</th>
+                  <th class="py-3 px-4">Costo Interno</th>
+                  <th class="py-3 px-4">Ubicación / SKU</th>
+                  <th class="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody" class="divide-y divide-white/5 text-gray-300">
+                <!-- Renderizado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Tabla de inventario interno -->
-      <div class="glass-card rounded-xl overflow-hidden border border-white/10">
-        <!-- Header de la tabla con buscador interno -->
-        <div class="p-4 sm:p-5 border-b border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 class="font-serif text-xl font-bold text-white flex items-center gap-2">
-              <i data-lucide="boxes" class="w-5 h-5 text-gold-400"></i>
-              Control de Inventario Interno & Stock
-            </h2>
-            <p class="text-xs text-gray-400 mt-0.5">Ajusta el stock físico con los botones (+ / -). Si llega a 0, la tienda pública mostrará automáticamente "No disponible".</p>
+      <!-- TAB 2: VENTAS & INGRESOS -->
+      <div id="adminPanel-sales" class="space-y-8 hidden">
+        <!-- Métricas de Ventas -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass-card p-4 rounded-xl border-emerald-500/30 bg-emerald-950/10">
+            <span class="text-xs text-emerald-400 uppercase tracking-wider block mb-1">Total Ingresos por Ventas</span>
+            <span id="salesMetricTotalRevenue" class="text-2xl font-bold text-emerald-300 font-serif">$0</span>
           </div>
-          <div class="relative w-full sm:w-72">
-            <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
-            <input 
-              id="adminSearchInput"
-              type="text" 
-              placeholder="Buscar perfume, lote o ubicación..." 
-              oninput="renderAdminTable()"
-              class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
-            />
+          <div class="glass-card p-4 rounded-xl border-gold-500/20">
+            <span class="text-xs text-gold-400 uppercase tracking-wider block mb-1">Unidades Vendidas</span>
+            <span id="salesMetricUnitsSold" class="text-2xl font-bold text-white font-serif">0 u.</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-white/10">
+            <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Transacciones Registradas</span>
+            <span id="salesMetricOrdersCount" class="text-2xl font-bold text-white font-serif">0</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-blue-500/20">
+            <span class="text-xs text-blue-400 uppercase tracking-wider block mb-1">Ticket Promedio</span>
+            <span id="salesMetricAverageTicket" class="text-2xl font-bold text-blue-300 font-serif">$0</span>
           </div>
         </div>
 
-        <!-- Tabla -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-noir-950 text-gray-400 uppercase tracking-wider border-b border-white/5">
-              <tr>
-                <th class="py-3 px-4">Producto</th>
-                <th class="py-3 px-4">Tipo</th>
-                <th class="py-3 px-4">Precio Público</th>
-                <th class="py-3 px-4 bg-noir-900/60 text-gold-400">Stock Interno</th>
-                <th class="py-3 px-4">Costo Interno</th>
-                <th class="py-3 px-4">Ubicación / SKU</th>
-                <th class="py-3 px-4 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="adminTableBody" class="divide-y divide-white/5 text-gray-300">
+        <!-- Tabla y Controles de Ventas -->
+        <div class="glass-card rounded-xl overflow-hidden border border-white/10">
+          <div class="p-4 sm:p-5 border-b border-white/10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            <div>
+              <h2 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="badge-dollar-sign" class="w-5 h-5 text-emerald-400"></i>
+                Historial de Ventas & Facturación
+              </h2>
+              <p class="text-xs text-gray-400 mt-0.5">Registro detallado de fragancias vendidas por WhatsApp, mostrador, redes y tienda.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Filtro Canal -->
+              <select id="salesChannelFilter" onchange="renderSalesTable()" class="bg-noir-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300 focus:outline-none focus:border-gold-500">
+                <option value="all">Todos los Canales</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Mostrador">Mostrador / Local</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Tienda Web">Tienda Web</option>
+              </select>
+
+              <!-- Buscador -->
+              <div class="relative flex-1 sm:w-60">
+                <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input 
+                  id="salesSearchInput"
+                  type="text" 
+                  placeholder="Buscar venta, cliente, perfume..." 
+                  oninput="renderSalesTable()"
+                  class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
+                />
+              </div>
+
+              <!-- Botón Registrar Venta -->
+              <button onclick="openSaleModal()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black font-bold uppercase tracking-wider text-xs rounded-lg shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
+                <i data-lucide="plus" class="w-4 h-4"></i> Registrar Venta
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla de Ventas -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-noir-950 text-gray-400 uppercase tracking-wider border-b border-white/5">
+                <tr>
+                  <th class="py-3 px-4">Fecha</th>
+                  <th class="py-3 px-4">Fragancia / Producto</th>
+                  <th class="py-3 px-4">Tipo</th>
+                  <th class="py-3 px-4 text-center">Cant.</th>
+                  <th class="py-3 px-4">Precio Unit.</th>
+                  <th class="py-3 px-4 font-bold text-emerald-400">Total Venta</th>
+                  <th class="py-3 px-4">Canal & Cliente</th>
+                  <th class="py-3 px-4">Método de Pago</th>
+                  <th class="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody" class="divide-y divide-white/5 text-gray-300">
+                <!-- Renderizado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: GASTOS EN MATERIALES -->
+      <div id="adminPanel-expenses" class="space-y-8 hidden">
+        <!-- Métricas de Gastos de Materiales -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass-card p-4 rounded-xl border-amber-500/30 bg-amber-950/10">
+            <span class="text-xs text-amber-400 uppercase tracking-wider block mb-1">Total Gastado en Materiales</span>
+            <span id="expenseMetricTotal" class="text-2xl font-bold text-amber-300 font-serif">$0</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-amber-500/20">
+            <span class="text-xs text-amber-300 uppercase tracking-wider block mb-1">Esencias & Aceites</span>
+            <span id="expenseMetricEsencias" class="text-2xl font-bold text-white font-serif">$0</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-blue-500/20">
+            <span class="text-xs text-blue-300 uppercase tracking-wider block mb-1">Frascos & Atomizadores</span>
+            <span id="expenseMetricFrascos" class="text-2xl font-bold text-white font-serif">$0</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border-pink-500/20">
+            <span class="text-xs text-pink-300 uppercase tracking-wider block mb-1">Alcohol, Empaque & Lab</span>
+            <span id="expenseMetricInsumos" class="text-2xl font-bold text-white font-serif">$0</span>
+          </div>
+        </div>
+
+        <!-- Tabla y Controles de Gastos -->
+        <div class="glass-card rounded-xl overflow-hidden border border-white/10">
+          <div class="p-4 sm:p-5 border-b border-white/10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            <div>
+              <h2 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="flask-conical" class="w-5 h-5 text-amber-400"></i>
+                Compras & Gastos en Materiales de Perfumería
+              </h2>
+              <p class="text-xs text-gray-400 mt-0.5">Control de inversión en esencias puras, botellas, atomizadores, alcohol tridestilado, empaque y laboratorio.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Filtro Categoría -->
+              <select id="expensesCategoryFilter" onchange="renderExpensesTable()" class="bg-noir-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300 focus:outline-none focus:border-gold-500">
+                <option value="all">Todas las Categorías</option>
+                <option value="esencias">🧪 Esencias y Aceites Puros</option>
+                <option value="frascos">🍾 Frascos y Botellas</option>
+                <option value="atomizadores">✨ Atomizadores y Válvulas</option>
+                <option value="alcohol">💧 Alcohol & Fijadores</option>
+                <option value="empaque">📦 Cajas, Bolsas y Empaque</option>
+                <option value="laboratorio">🔬 Herramientas Lab & Pipetas</option>
+                <option value="otros">🔖 Otros Insumos</option>
+              </select>
+
+              <!-- Buscador -->
+              <div class="relative flex-1 sm:w-60">
+                <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input 
+                  id="expensesSearchInput"
+                  type="text" 
+                  placeholder="Buscar insumo o proveedor..." 
+                  oninput="renderExpensesTable()"
+                  class="w-full bg-noir-950 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
+                />
+              </div>
+
+              <!-- Botón Registrar Gasto -->
+              <button onclick="openExpenseModal()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold uppercase tracking-wider text-xs rounded-lg shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
+                <i data-lucide="plus" class="w-4 h-4"></i> Registrar Gasto Material
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla de Gastos -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-noir-950 text-gray-400 uppercase tracking-wider border-b border-white/5">
+                <tr>
+                  <th class="py-3 px-4">Fecha</th>
+                  <th class="py-3 px-4">Concepto / Material</th>
+                  <th class="py-3 px-4">Tipo de Material</th>
+                  <th class="py-3 px-4">Presentación / Cant.</th>
+                  <th class="py-3 px-4">Proveedor</th>
+                  <th class="py-3 px-4 font-bold text-amber-400">Monto Gastado</th>
+                  <th class="py-3 px-4">Notas</th>
+                  <th class="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="expensesTableBody" class="divide-y divide-white/5 text-gray-300">
+                <!-- Renderizado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: BALANCE & UTILIDAD FINANCIERA -->
+      <div id="adminPanel-balance" class="space-y-8 hidden">
+        <!-- Tarjetas Ejecutivas de Balance -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-card p-5 rounded-xl border-emerald-500/30 bg-emerald-950/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-emerald-400 uppercase tracking-wider font-semibold">Total Ingresos (Ventas)</span>
+              <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <span id="balTotalRevenue" class="text-3xl font-bold text-emerald-300 font-serif block">$0</span>
+            <span class="text-[11px] text-gray-400 mt-1 block">Recaudado por venta de fragancias</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-xl border-red-500/30 bg-red-950/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-red-400 uppercase tracking-wider font-semibold">(-) Total Gastos Materiales</span>
+              <i data-lucide="trending-down" class="w-4 h-4 text-red-400"></i>
+            </div>
+            <span id="balTotalExpenses" class="text-3xl font-bold text-red-300 font-serif block">$0</span>
+            <span class="text-[11px] text-gray-400 mt-1 block">Inversión en insumos & fabricación</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-xl border-gold-500/40 bg-gold-950/20">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-gold-400 uppercase tracking-wider font-semibold">(=) Ganancia Neta / Utilidad</span>
+              <i data-lucide="coins" class="w-4 h-4 text-gold-400"></i>
+            </div>
+            <span id="balNetProfit" class="text-3xl font-bold text-gold-300 font-serif block">$0</span>
+            <span id="balNetProfitSub" class="text-[11px] text-emerald-400 mt-1 block font-medium">Margen positivo</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-xl border-blue-500/30 bg-blue-950/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-blue-400 uppercase tracking-wider font-semibold">Margen de Rentabilidad</span>
+              <i data-lucide="percent" class="w-4 h-4 text-blue-400"></i>
+            </div>
+            <span id="balProfitMargin" class="text-3xl font-bold text-blue-300 font-serif block">0.0%</span>
+            <span class="text-[11px] text-gray-400 mt-1 block">Utilidad sobre ingresos totales</span>
+          </div>
+        </div>
+
+        <!-- Desglose por tipo de material & Capital en Stock -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Distribución de Inversión por Tipo de Material -->
+          <div class="lg:col-span-2 glass-card p-6 rounded-xl border border-white/10 space-y-5">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+              <div>
+                <h3 class="font-serif text-xl font-bold text-white flex items-center gap-2">
+                  <i data-lucide="pie-chart" class="w-5 h-5 text-gold-400"></i>
+                  Distribución de Gastos por Tipo de Material
+                </h3>
+                <p class="text-xs text-gray-400 mt-0.5">Porcentaje del capital invertido en cada tipo de insumo de perfumería.</p>
+              </div>
+            </div>
+
+            <!-- Barras de progreso de distribución -->
+            <div id="materialBreakdownBars" class="space-y-4">
               <!-- Renderizado dinámicamente -->
-            </tbody>
-          </table>
+            </div>
+          </div>
+
+          <!-- Resumen de Capital en Bodega & Proyección -->
+          <div class="glass-card p-6 rounded-xl border border-white/10 space-y-5">
+            <h3 class="font-serif text-xl font-bold text-white flex items-center gap-2 border-b border-white/10 pb-4">
+              <i data-lucide="package-check" class="w-5 h-5 text-emerald-400"></i>
+              Capital en Inventario
+            </h3>
+
+            <div class="space-y-4 text-xs">
+              <div class="p-3.5 rounded-lg bg-noir-950 border border-white/5 flex items-center justify-between">
+                <div>
+                  <span class="text-gray-400 block text-[11px]">Valor de Stock Físico (al costo):</span>
+                  <span id="balStockValue" class="text-lg font-bold text-white font-serif">$0</span>
+                </div>
+                <i data-lucide="boxes" class="w-6 h-6 text-gold-400/50"></i>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-noir-950 border border-white/5 flex items-center justify-between">
+                <div>
+                  <span class="text-gray-400 block text-[11px]">Proyección de Venta de ese Stock:</span>
+                  <span id="balProjectedRetail" class="text-lg font-bold text-emerald-400 font-serif">$0</span>
+                </div>
+                <i data-lucide="sparkles" class="w-6 h-6 text-emerald-400/50"></i>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-noir-950 border border-white/5 flex items-center justify-between">
+                <div>
+                  <span class="text-gray-400 block text-[11px]">Ganancia Potencial Pendiente:</span>
+                  <span id="balPotentialProfit" class="text-lg font-bold text-gold-300 font-serif">$0</span>
+                </div>
+                <i data-lucide="banknote" class="w-6 h-6 text-gold-400/50"></i>
+              </div>
+
+              <div class="p-3 rounded-lg bg-gold-500/10 border border-gold-500/20 text-gold-300 text-[11px] leading-relaxed">
+                <i data-lucide="info" class="w-3.5 h-3.5 inline-block mr-1 text-gold-400"></i>
+                <strong>Consejo del Laboratorio:</strong> Mantén el gasto en esencias puras y frascos por debajo del 40% del precio de venta al público para garantizar un margen neto superior al 60%.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -968,6 +1299,177 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODAL: REGISTRAR VENTA (ADMIN)             -->
+  <!-- ========================================== -->
+  <div id="saleModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-noir-900 border border-emerald-500/40 rounded-xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeSaleModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+          <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white">Registrar Nueva Venta</h3>
+      </div>
+
+      <form onsubmit="handleSaveSale(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Fragancia / Producto *</label>
+          <select id="saleProductSelect" onchange="onSaleProductSelectChange()" required class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+            <!-- Rellenado dinámicamente -->
+          </select>
+        </div>
+
+        <div id="saleCustomItemWrap" class="hidden">
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Nombre Personalizado / Descripción</label>
+          <input id="saleCustomItemName" type="text" placeholder="Ej: Fórmula a medida 50ml, Decant especial..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Cantidad *</label>
+            <input id="saleQty" type="number" min="1" value="1" required oninput="calculateSaleTotal()" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Precio Unitario ($) *</label>
+            <input id="saleUnitPrice" type="number" min="0" required oninput="calculateSaleTotal()" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <div class="p-3 bg-noir-950 rounded-lg border border-emerald-500/30 flex items-center justify-between">
+          <span class="text-xs text-gray-400 uppercase font-semibold">Total de la Venta:</span>
+          <span id="saleTotalPreview" class="text-xl font-bold text-emerald-400 font-serif">$0</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Canal de Venta</label>
+            <select id="saleChannel" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Mostrador">Mostrador / Local</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Tienda Web">Tienda Web</option>
+            </select>
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Método de Pago</label>
+            <select id="salePayment" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <option value="Nequi / Bancolombia">Nequi / Bancolombia</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+              <option value="Tarjeta de Débito/Crédito">Tarjeta Débito/Crédito</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Cliente / Referencia</label>
+            <input id="saleCustomer" type="text" placeholder="Ej: Laura M. - WhatsApp" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Fecha</label>
+            <input id="saleDate" type="date" required class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <label class="flex items-center gap-2 cursor-pointer bg-noir-950 p-3 rounded border border-white/10">
+            <input id="saleDeductStock" type="checkbox" checked class="accent-gold-500 w-4 h-4 rounded">
+            <span class="text-xs text-gray-300">Descontar automáticamente del stock físico de inventario</span>
+          </label>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="button" onclick="closeSaleModal()" class="flex-1 py-2.5 bg-noir-800 hover:bg-noir-750 text-gray-300 font-bold uppercase tracking-wider text-xs rounded transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg transition-all">
+            Confirmar Venta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: REGISTRAR GASTO EN MATERIALES       -->
+  <!-- ========================================== -->
+  <div id="expenseModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-noir-900 border border-amber-500/40 rounded-xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeExpenseModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+          <i data-lucide="flask-conical" class="w-4 h-4"></i>
+        </div>
+        <h3 class="font-serif text-2xl font-bold text-white">Registrar Gasto de Material</h3>
+      </div>
+
+      <form onsubmit="handleSaveExpense(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Concepto / Material Comprado *</label>
+          <input id="expenseConcept" type="text" required placeholder="Ej: Esencia concentrada Baccarat 540 Grasse, 100 Frascos 50ml..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Tipo de Material *</label>
+            <select id="expenseCategory" required class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+              <option value="esencias">🧪 Esencias y Aceites Puros</option>
+              <option value="frascos">🍾 Frascos y Botellas de Vidrio</option>
+              <option value="atomizadores">✨ Atomizadores y Válvulas</option>
+              <option value="alcohol">💧 Alcohol & Fijadores Químicos</option>
+              <option value="empaque">📦 Cajas, Bolsas y Empaque</option>
+              <option value="laboratorio">🔬 Lab (Pipetas, Beakers, etc.)</option>
+              <option value="otros">🔖 Otros Insumos</option>
+            </select>
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Monto Gastado ($) *</label>
+            <input id="expenseAmount" type="number" min="1" required placeholder="Ej: 150000" class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Cantidad / Presentación</label>
+            <input id="expenseQuantity" type="text" placeholder="Ej: 500 ml, 100 frascos, 1 galón..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Proveedor / Casa</label>
+            <input id="expenseSupplier" type="text" placeholder="Ej: Mane Francia, Cristalería Andina..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Fecha de Compra</label>
+            <input id="expenseDate" type="date" required class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+          <div>
+            <label class="block uppercase tracking-wider text-gray-300 font-semibold mb-1">Notas / Factura N°</label>
+            <input id="expenseNotes" type="text" placeholder="Opcional: N° Factura o notas..." class="w-full bg-noir-950 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:border-gold-500">
+          </div>
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="button" onclick="closeExpenseModal()" class="flex-1 py-2.5 bg-noir-800 hover:bg-noir-750 text-gray-300 font-bold uppercase tracking-wider text-xs rounded transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg transition-all">
+            Guardar Gasto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Shopping Cart Drawer -->
   <div id="cartDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-noir-900 border-l border-gold-500/20 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
     <div class="p-6 border-b border-white/10 flex items-center justify-between">
@@ -1014,6 +1516,8 @@
     const STORAGE_KEY = 'aura_atelier_perfumes_v3';
     const AUTH_KEY = 'aura_admin_credentials_v1';
     const SESSION_KEY = 'aura_admin_session_active';
+    const SALES_KEY = 'aura_sales_history_v1';
+    const EXPENSES_KEY = 'aura_expenses_history_v1';
 
     const DEFAULT_AUTH = {
       user: 'admin',
@@ -1240,7 +1744,130 @@
       }
     ];
 
+    // Semilla inicial de ventas históricas
+    const DEFAULT_SALES = [
+      {
+        id: 1,
+        date: "2026-11-08",
+        productId: 1,
+        productName: "Sauvage Elixir (60 ml)",
+        type: "original",
+        qty: 1,
+        unitPrice: 185000,
+        totalPrice: 185000,
+        channel: "WhatsApp",
+        customer: "Carlos R. - Bogotá",
+        payment: "Nequi / Bancolombia"
+      },
+      {
+        id: 2,
+        date: "2026-11-08",
+        productId: 2,
+        productName: "Fórmula N° 540 Extrait 33% (100 ml)",
+        type: "preparado",
+        qty: 2,
+        unitPrice: 36000,
+        totalPrice: 72000,
+        channel: "Instagram",
+        customer: "Camila V. - Medellín",
+        payment: "Efectivo"
+      },
+      {
+        id: 3,
+        date: "2026-11-07",
+        productId: 5,
+        productName: "Decant Angels' Share (10 ml)",
+        type: "decant",
+        qty: 2,
+        unitPrice: 32000,
+        totalPrice: 64000,
+        channel: "Mostrador",
+        customer: "Cliente Local",
+        payment: "Tarjeta de Débito/Crédito"
+      },
+      {
+        id: 4,
+        date: "2026-11-07",
+        productId: 2,
+        productName: "Fórmula N° 540 Extrait 33% (100 ml)",
+        type: "preparado",
+        qty: 1,
+        unitPrice: 36000,
+        totalPrice: 36000,
+        channel: "WhatsApp",
+        customer: "Santiago G.",
+        payment: "Transferencia Bancaria"
+      }
+    ];
+
+    // Semilla inicial de compras y gastos de insumos de perfumería
+    const DEFAULT_EXPENSES = [
+      {
+        id: 1,
+        date: "2026-11-01",
+        concept: "Esencias Puras Francesas Grasse (Baccarat 540 & Sauvage)",
+        category: "esencias",
+        amount: 280000,
+        quantity: "1.000 ml (1 Litro)",
+        supplier: "Mane Francia Import",
+        notes: "Lote Grasse A-2026 pureza grado perfumería fina"
+      },
+      {
+        id: 2,
+        date: "2026-11-03",
+        concept: "Lote Frascos Cristal Italiano Pesado 100ml y 50ml",
+        category: "frascos",
+        amount: 145000,
+        quantity: "150 unidades",
+        supplier: "Cristalería Andina",
+        notes: "Frascos pesados con fondo grueso y rosca estándar"
+      },
+      {
+        id: 3,
+        date: "2026-11-04",
+        concept: "Válvulas Atomizadoras Doradas de Microdifusión",
+        category: "atomizadores",
+        amount: 65000,
+        quantity: "200 atomizadores",
+        supplier: "Luxury Caps & Pumps",
+        notes: "Micronizado fino tipo niebla sin goteo"
+      },
+      {
+        id: 4,
+        date: "2026-11-05",
+        concept: "Alcohol Tridestilado 96° Cereal + Fijador Galaxolide",
+        category: "alcohol",
+        amount: 78000,
+        quantity: "20 Litros",
+        supplier: "Químicos del Valle",
+        notes: "Alcohol desodorizado neutro especial para perfumería"
+      },
+      {
+        id: 5,
+        date: "2026-11-06",
+        concept: "Cajas Rígidas Negras Mate con Estampado Oro Aura Atelier",
+        category: "empaque",
+        amount: 92000,
+        quantity: "120 cajas de lujo",
+        supplier: "Pack & Design",
+        notes: "Packaging de presentación para envíos y tienda"
+      },
+      {
+        id: 6,
+        date: "2026-11-07",
+        concept: "Probetas Graduadas Vidrio Borosilicato y Pipetas Pasteur",
+        category: "laboratorio",
+        amount: 35000,
+        quantity: "Kit 10 piezas",
+        supplier: "Equipos Científicos",
+        notes: "Instrumentos de dosificación para laboratorio custom"
+      }
+    ];
+
     let catalog = [];
+    let sales = [];
+    let expenses = [];
+    let currentAdminTab = 'inventory';
     let publicFilter = 'all';
     let cart = [];
     let currentActiveSection = 'catalogo';
@@ -1263,6 +1890,38 @@
     function saveCatalog() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(catalog));
       updateAllViews();
+    }
+
+    function loadSales() {
+      const stored = localStorage.getItem(SALES_KEY);
+      if (stored) {
+        try { sales = JSON.parse(stored); } catch(e) { sales = [...DEFAULT_SALES]; }
+      } else {
+        sales = [...DEFAULT_SALES];
+        saveSales();
+      }
+    }
+
+    function saveSales() {
+      localStorage.setItem(SALES_KEY, JSON.stringify(sales));
+      renderSalesTable();
+      renderBalanceView();
+    }
+
+    function loadExpenses() {
+      const stored = localStorage.getItem(EXPENSES_KEY);
+      if (stored) {
+        try { expenses = JSON.parse(stored); } catch(e) { expenses = [...DEFAULT_EXPENSES]; }
+      } else {
+        expenses = [...DEFAULT_EXPENSES];
+        saveExpenses();
+      }
+    }
+
+    function saveExpenses() {
+      localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses));
+      renderExpensesTable();
+      renderBalanceView();
     }
 
     function resetToDefaultData() {
@@ -1391,7 +2050,7 @@
 
         vStore.classList.add('hidden');
         vAdmin.classList.remove('hidden');
-        renderAdminTable();
+        switchAdminTab(currentAdminTab || 'inventory');
       } else {
         vAdmin.classList.add('hidden');
         vStore.classList.remove('hidden');
@@ -1886,8 +2545,531 @@
       }
     }
 
+    // ==========================================
+    // NAVEGACIÓN DE PESTAÑAS ADMINISTRATIVAS
+    // ==========================================
+    function switchAdminTab(tabName) {
+      currentAdminTab = tabName;
+      const tabs = ['inventory', 'sales', 'expenses', 'balance'];
+
+      tabs.forEach(t => {
+        const btn = document.getElementById(`adminTabBtn-${t}`);
+        const panel = document.getElementById(`adminPanel-${t}`);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = "admin-tab-btn active px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-all whitespace-nowrap";
+          } else {
+            btn.className = "admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border border-transparent text-gray-400 hover:text-white transition-all whitespace-nowrap";
+          }
+        }
+        if (panel) {
+          if (t === tabName) {
+            panel.classList.remove('hidden');
+          } else {
+            panel.classList.add('hidden');
+          }
+        }
+      });
+
+      // Actualizar botón de acción rápida en la cabecera del Admin
+      const headerBtn = document.getElementById('adminHeaderActionBtn');
+      const headerText = document.getElementById('adminHeaderActionText');
+      const headerIcon = document.getElementById('adminHeaderActionIcon');
+
+      if (headerBtn && headerText && headerIcon) {
+        if (tabName === 'inventory') {
+          headerBtn.className = "px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2 transition-all";
+          headerText.innerText = "Nuevo Perfume";
+          headerIcon.setAttribute('data-lucide', 'plus-circle');
+        } else if (tabName === 'sales') {
+          headerBtn.className = "px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2 transition-all";
+          headerText.innerText = "Registrar Venta";
+          headerIcon.setAttribute('data-lucide', 'badge-dollar-sign');
+        } else if (tabName === 'expenses') {
+          headerBtn.className = "px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2 transition-all";
+          headerText.innerText = "Gasto Material";
+          headerIcon.setAttribute('data-lucide', 'flask-conical');
+        } else if (tabName === 'balance') {
+          headerBtn.className = "px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded shadow-lg flex items-center justify-center gap-2 transition-all";
+          headerText.innerText = "Registrar Venta";
+          headerIcon.setAttribute('data-lucide', 'badge-dollar-sign');
+        }
+      }
+
+      if (tabName === 'inventory') renderAdminTable();
+      if (tabName === 'sales') renderSalesTable();
+      if (tabName === 'expenses') renderExpensesTable();
+      if (tabName === 'balance') renderBalanceView();
+
+      lucide.createIcons();
+    }
+
+    function handleAdminHeaderAction() {
+      if (currentAdminTab === 'inventory') {
+        openProductForm();
+      } else if (currentAdminTab === 'sales') {
+        openSaleModal();
+      } else if (currentAdminTab === 'expenses') {
+        openExpenseModal();
+      } else if (currentAdminTab === 'balance') {
+        openSaleModal();
+      }
+    }
+
+    // ==========================================
+    // MÓDULO DE VENTAS (ADMIN)
+    // ==========================================
+    function renderSalesTable() {
+      const tbody = document.getElementById('salesTableBody');
+      const searchInput = document.getElementById('salesSearchInput');
+      const channelFilter = document.getElementById('salesChannelFilter');
+      if (!tbody) return;
+
+      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const channel = channelFilter ? channelFilter.value : 'all';
+
+      // Métricas de ventas
+      const totalRevenue = sales.reduce((acc, s) => acc + (Number(s.totalPrice) || 0), 0);
+      const totalUnits = sales.reduce((acc, s) => acc + (Number(s.qty) || 0), 0);
+      const ordersCount = sales.length;
+      const averageTicket = ordersCount > 0 ? Math.round(totalRevenue / ordersCount) : 0;
+
+      const revEl = document.getElementById('salesMetricTotalRevenue');
+      const unitsEl = document.getElementById('salesMetricUnitsSold');
+      const ordersEl = document.getElementById('salesMetricOrdersCount');
+      const avgEl = document.getElementById('salesMetricAverageTicket');
+
+      if (revEl) revEl.innerText = formatPrice(totalRevenue);
+      if (unitsEl) unitsEl.innerText = `${totalUnits} u.`;
+      if (ordersEl) ordersEl.innerText = ordersCount;
+      if (avgEl) avgEl.innerText = formatPrice(averageTicket);
+
+      let filtered = sales;
+      if (channel !== 'all') {
+        filtered = filtered.filter(s => s.channel === channel);
+      }
+      if (search !== '') {
+        filtered = filtered.filter(s => 
+          (s.productName && s.productName.toLowerCase().includes(search)) ||
+          (s.customer && s.customer.toLowerCase().includes(search)) ||
+          (s.payment && s.payment.toLowerCase().includes(search)) ||
+          (s.channel && s.channel.toLowerCase().includes(search))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-gray-500">
+              No se han registrado ventas con estos filtros.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(s => {
+        let typeBadge = '';
+        if (s.type === 'original') {
+          typeBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-900/40 text-blue-300 border border-blue-500/30">Original</span>';
+        } else if (s.type === 'preparado') {
+          typeBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-gold-500/20 text-gold-300 border border-gold-500/30">Preparado 33%</span>';
+        } else {
+          typeBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-900/40 text-purple-300 border border-purple-500/30">Decant / Otro</span>';
+        }
+
+        let channelColor = 'text-gray-300';
+        if (s.channel === 'WhatsApp') channelColor = 'text-emerald-400 font-semibold';
+        if (s.channel === 'Instagram') channelColor = 'text-pink-400 font-semibold';
+        if (s.channel === 'Mostrador') channelColor = 'text-blue-400 font-semibold';
+
+        return `
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="py-3 px-4 text-gray-400 font-mono text-[11px]">${s.date || 'Reciente'}</td>
+            <td class="py-3 px-4 font-bold text-white">${s.productName}</td>
+            <td class="py-3 px-4">${typeBadge}</td>
+            <td class="py-3 px-4 text-center font-bold text-white">${s.qty}</td>
+            <td class="py-3 px-4 text-gray-400">${formatPrice(s.unitPrice)}</td>
+            <td class="py-3 px-4 font-bold text-emerald-400 text-sm">${formatPrice(s.totalPrice)}</td>
+            <td class="py-3 px-4">
+              <span class="${channelColor}">${s.channel}</span>
+              ${s.customer ? `<div class="text-[11px] text-gray-400 font-normal">${s.customer}</div>` : ''}
+            </td>
+            <td class="py-3 px-4 text-gray-400 text-[11px]">${s.payment || 'Nequi / Bancolombia'}</td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="deleteSale(${s.id})" class="p-1.5 bg-noir-800 hover:bg-red-500 hover:text-white rounded text-gray-400 transition-colors" title="Eliminar registro">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function openSaleModal() {
+      const select = document.getElementById('saleProductSelect');
+      const dateInput = document.getElementById('saleDate');
+      const customWrap = document.getElementById('saleCustomItemWrap');
+      const customInput = document.getElementById('saleCustomItemName');
+      const qtyInput = document.getElementById('saleQty');
+      const unitInput = document.getElementById('saleUnitPrice');
+
+      if (customWrap) customWrap.classList.add('hidden');
+      if (customInput) customInput.value = '';
+      if (qtyInput) qtyInput.value = '1';
+      if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+      if (select) {
+        select.innerHTML = `
+          <option value="">-- Seleccionar perfume del catálogo --</option>
+          ${catalog.map(p => `
+            <option value="${p.id}" data-price="${p.price}" data-type="${p.type}" data-name="${p.name} (${p.volume})" data-stock="${p.stock}">
+              ${p.name} (${p.volume}) — ${formatPrice(p.price)} [Stock: ${p.stock} u.]
+            </option>
+          `).join('')}
+          <option value="custom">✨ Producto / Concepto Personalizado (Fórmula a medida, etc.)</option>
+        `;
+      }
+
+      if (catalog.length > 0 && select) {
+        select.selectedIndex = 1;
+        onSaleProductSelectChange();
+      } else {
+        calculateSaleTotal();
+      }
+
+      document.getElementById('saleModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeSaleModal() {
+      document.getElementById('saleModal').classList.add('hidden');
+    }
+
+    function onSaleProductSelectChange() {
+      const select = document.getElementById('saleProductSelect');
+      const customWrap = document.getElementById('saleCustomItemWrap');
+      const unitInput = document.getElementById('saleUnitPrice');
+      const val = select.value;
+
+      if (val === 'custom') {
+        customWrap.classList.remove('hidden');
+        unitInput.value = '';
+        unitInput.focus();
+      } else {
+        customWrap.classList.add('hidden');
+        const selectedOpt = select.options[select.selectedIndex];
+        if (selectedOpt && selectedOpt.dataset.price) {
+          unitInput.value = selectedOpt.dataset.price;
+        }
+      }
+      calculateSaleTotal();
+    }
+
+    function calculateSaleTotal() {
+      const qty = parseInt(document.getElementById('saleQty').value) || 0;
+      const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+      const total = qty * unitPrice;
+      const preview = document.getElementById('saleTotalPreview');
+      if (preview) {
+        preview.innerText = formatPrice(total);
+      }
+      return total;
+    }
+
+    function handleSaveSale(e) {
+      e.preventDefault();
+      const select = document.getElementById('saleProductSelect');
+      const val = select.value;
+      const qty = parseInt(document.getElementById('saleQty').value) || 1;
+      const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+      const totalPrice = qty * unitPrice;
+      const channel = document.getElementById('saleChannel').value;
+      const payment = document.getElementById('salePayment').value;
+      const customer = document.getElementById('saleCustomer').value.trim();
+      const date = document.getElementById('saleDate').value || new Date().toISOString().split('T')[0];
+      const deductStock = document.getElementById('saleDeductStock').checked;
+
+      let productId = null;
+      let productName = '';
+      let productType = 'preparado';
+
+      if (val === 'custom') {
+        productName = document.getElementById('saleCustomItemName').value.trim() || 'Fórmula Personalizada Aura';
+        productType = 'preparado';
+      } else {
+        productId = Number(val);
+        const item = catalog.find(p => p.id === productId);
+        if (item) {
+          productName = `${item.name} (${item.volume})`;
+          productType = item.type;
+
+          if (deductStock) {
+            item.stock = Math.max(0, (Number(item.stock) || 0) - qty);
+            saveCatalog();
+          }
+        } else {
+          productName = 'Perfume Aura';
+        }
+      }
+
+      const newSale = {
+        id: Date.now(),
+        date,
+        productId,
+        productName,
+        type: productType,
+        qty,
+        unitPrice,
+        totalPrice,
+        channel,
+        customer,
+        payment
+      };
+
+      sales.unshift(newSale);
+      saveSales();
+      closeSaleModal();
+      showToast(`Venta de "${productName}" registrada (+${formatPrice(totalPrice)})`, "success");
+    }
+
+    function deleteSale(id) {
+      if (confirm("¿Deseas eliminar este registro de venta?")) {
+        sales = sales.filter(s => s.id !== id);
+        saveSales();
+        showToast("Registro de venta eliminado", "info");
+      }
+    }
+
+    // ==========================================
+    // MÓDULO DE GASTOS EN MATERIALES (ADMIN)
+    // ==========================================
+    const MATERIAL_CATEGORIES_INFO = {
+      esencias: { name: '🧪 Esencias & Aceites Puros', badgeClass: 'badge-mat-esencias', barColor: 'bg-amber-500' },
+      frascos: { name: '🍾 Frascos & Botellas de Vidrio', badgeClass: 'badge-mat-frascos', barColor: 'bg-blue-500' },
+      atomizadores: { name: '✨ Atomizadores & Válvulas', badgeClass: 'badge-mat-atomizadores', barColor: 'bg-purple-500' },
+      alcohol: { name: '💧 Alcohol & Fijadores', badgeClass: 'badge-mat-alcohol', barColor: 'bg-emerald-500' },
+      empaque: { name: '📦 Cajas, Bolsas & Empaque', badgeClass: 'badge-mat-empaque', barColor: 'bg-rose-500' },
+      laboratorio: { name: '🔬 Herramientas Lab & Pipetas', badgeClass: 'badge-mat-laboratorio', barColor: 'bg-teal-500' },
+      otros: { name: '🔖 Otros Insumos', badgeClass: 'badge-mat-otros', barColor: 'bg-gray-400' }
+    };
+
+    function renderExpensesTable() {
+      const tbody = document.getElementById('expensesTableBody');
+      const searchInput = document.getElementById('expensesSearchInput');
+      const catFilter = document.getElementById('expensesCategoryFilter');
+      if (!tbody) return;
+
+      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const category = catFilter ? catFilter.value : 'all';
+
+      // Métricas de gastos
+      const totalExpenses = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const esenciasSum = expenses.filter(e => e.category === 'esencias').reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const frascosSum = expenses.filter(e => e.category === 'frascos' || e.category === 'atomizadores').reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const insumosSum = expenses.filter(e => e.category !== 'esencias' && e.category !== 'frascos' && e.category !== 'atomizadores').reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+
+      const totEl = document.getElementById('expenseMetricTotal');
+      const esEl = document.getElementById('expenseMetricEsencias');
+      const frEl = document.getElementById('expenseMetricFrascos');
+      const inEl = document.getElementById('expenseMetricInsumos');
+
+      if (totEl) totEl.innerText = formatPrice(totalExpenses);
+      if (esEl) esEl.innerText = formatPrice(esenciasSum);
+      if (frEl) frEl.innerText = formatPrice(frascosSum);
+      if (inEl) inEl.innerText = formatPrice(insumosSum);
+
+      let filtered = expenses;
+      if (category !== 'all') {
+        filtered = filtered.filter(e => e.category === category);
+      }
+      if (search !== '') {
+        filtered = filtered.filter(e => 
+          (e.concept && e.concept.toLowerCase().includes(search)) ||
+          (e.supplier && e.supplier.toLowerCase().includes(search)) ||
+          (e.notes && e.notes.toLowerCase().includes(search))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-8 text-center text-gray-500">
+              No se encontraron gastos de materiales registrados.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(e => {
+        const catInfo = MATERIAL_CATEGORIES_INFO[e.category] || MATERIAL_CATEGORIES_INFO['otros'];
+        const badgeHtml = `<span class="px-2.5 py-1 rounded text-[11px] font-semibold ${catInfo.badgeClass}">${catInfo.name}</span>`;
+
+        return `
+          <tr class="hover:bg-white/[0.02] transition-colors">
+            <td class="py-3 px-4 text-gray-400 font-mono text-[11px]">${e.date || 'Reciente'}</td>
+            <td class="py-3 px-4 font-bold text-white">${e.concept}</td>
+            <td class="py-3 px-4">${badgeHtml}</td>
+            <td class="py-3 px-4 text-gray-300">${e.quantity || '—'}</td>
+            <td class="py-3 px-4 text-gray-400">${e.supplier || 'Proveedor Local'}</td>
+            <td class="py-3 px-4 font-bold text-amber-400 text-sm">${formatPrice(e.amount)}</td>
+            <td class="py-3 px-4 text-gray-400 text-[11px] max-w-[150px] truncate" title="${e.notes || ''}">${e.notes || '—'}</td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="deleteExpense(${e.id})" class="p-1.5 bg-noir-800 hover:bg-red-500 hover:text-white rounded text-gray-400 transition-colors" title="Eliminar gasto">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function openExpenseModal() {
+      document.getElementById('expenseConcept').value = '';
+      document.getElementById('expenseCategory').value = 'esencias';
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('expenseQuantity').value = '';
+      document.getElementById('expenseSupplier').value = '';
+      document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('expenseNotes').value = '';
+
+      document.getElementById('expenseModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeExpenseModal() {
+      document.getElementById('expenseModal').classList.add('hidden');
+    }
+
+    function handleSaveExpense(e) {
+      e.preventDefault();
+      const concept = document.getElementById('expenseConcept').value.trim();
+      const category = document.getElementById('expenseCategory').value;
+      const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+      const quantity = document.getElementById('expenseQuantity').value.trim();
+      const supplier = document.getElementById('expenseSupplier').value.trim();
+      const date = document.getElementById('expenseDate').value || new Date().toISOString().split('T')[0];
+      const notes = document.getElementById('expenseNotes').value.trim();
+
+      const newExpense = {
+        id: Date.now(),
+        date,
+        concept,
+        category,
+        amount,
+        quantity,
+        supplier,
+        notes
+      };
+
+      expenses.unshift(newExpense);
+      saveExpenses();
+      closeExpenseModal();
+      showToast(`Gasto en "${concept}" registrado (${formatPrice(amount)})`, "success");
+    }
+
+    function deleteExpense(id) {
+      if (confirm("¿Deseas eliminar este registro de gasto de material?")) {
+        expenses = expenses.filter(e => e.id !== id);
+        saveExpenses();
+        showToast("Registro de gasto eliminado", "info");
+      }
+    }
+
+    // ==========================================
+    // BALANCE & UTILIDAD FINANCIERA (ADMIN)
+    // ==========================================
+    function renderBalanceView() {
+      const totalRevenue = sales.reduce((acc, s) => acc + (Number(s.totalPrice) || 0), 0);
+      const totalExpenses = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const netProfit = totalRevenue - totalExpenses;
+      const margin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : '0.0';
+
+      const revEl = document.getElementById('balTotalRevenue');
+      const expEl = document.getElementById('balTotalExpenses');
+      const netEl = document.getElementById('balNetProfit');
+      const subEl = document.getElementById('balNetProfitSub');
+      const marEl = document.getElementById('balProfitMargin');
+
+      if (revEl) revEl.innerText = formatPrice(totalRevenue);
+      if (expEl) expEl.innerText = formatPrice(totalExpenses);
+
+      if (netEl) {
+        netEl.innerText = formatPrice(netProfit);
+        if (netProfit < 0) {
+          netEl.className = "text-3xl font-bold text-red-400 font-serif block";
+          if (subEl) {
+            subEl.innerText = "Déficit / Inversión inicial en insumos supera las ventas";
+            subEl.className = "text-[11px] text-red-400 mt-1 block font-medium";
+          }
+        } else {
+          netEl.className = "text-3xl font-bold text-gold-300 font-serif block";
+          if (subEl) {
+            subEl.innerText = "Utilidad neta positiva";
+            subEl.className = "text-[11px] text-emerald-400 mt-1 block font-medium";
+          }
+        }
+      }
+
+      if (marEl) marEl.innerText = `${margin}%`;
+
+      // Barras de progreso de distribución de materiales
+      const breakdownWrap = document.getElementById('materialBreakdownBars');
+      if (breakdownWrap) {
+        const catKeys = ['esencias', 'frascos', 'atomizadores', 'alcohol', 'empaque', 'laboratorio', 'otros'];
+        const catTotals = {};
+        catKeys.forEach(k => catTotals[k] = 0);
+
+        expenses.forEach(e => {
+          const cat = catKeys.includes(e.category) ? e.category : 'otros';
+          catTotals[cat] += (Number(e.amount) || 0);
+        });
+
+        breakdownWrap.innerHTML = catKeys.map(k => {
+          const info = MATERIAL_CATEGORIES_INFO[k] || MATERIAL_CATEGORIES_INFO['otros'];
+          const spent = catTotals[k];
+          const pct = totalExpenses > 0 ? ((spent / totalExpenses) * 100).toFixed(1) : '0.0';
+
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-gray-300 font-medium flex items-center gap-1.5">${info.name}</span>
+                <span class="text-white font-bold">${formatPrice(spent)} <span class="text-gray-400 text-[10px] font-normal">(${pct}%)</span></span>
+              </div>
+              <div class="w-full bg-noir-950 rounded-full h-2 overflow-hidden border border-white/5">
+                <div class="${info.barColor} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Capital en Bodega & Proyección
+      const stockCost = catalog.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.costPrice) || 0)), 0);
+      const projectedRetail = catalog.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.price) || 0)), 0);
+      const potentialProfit = Math.max(0, projectedRetail - stockCost);
+
+      const stockValEl = document.getElementById('balStockValue');
+      const projEl = document.getElementById('balProjectedRetail');
+      const potEl = document.getElementById('balPotentialProfit');
+
+      if (stockValEl) stockValEl.innerText = formatPrice(stockCost);
+      if (projEl) projEl.innerText = formatPrice(projectedRetail);
+      if (potEl) potEl.innerText = formatPrice(potentialProfit);
+
+      lucide.createIcons();
+    }
+
     function updateAllViews() {
       renderAdminTable();
+      renderSalesTable();
+      renderExpensesTable();
+      renderBalanceView();
       applyPublicFilters();
     }
 
@@ -2131,6 +3313,8 @@
     // Inicialización al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       loadCatalog();
+      loadSales();
+      loadExpenses();
       updateAllViews();
       showSection('catalogo');
       lucide.createIcons();
