@@ -747,7 +747,7 @@
                 <i data-lucide="boxes" class="w-5 h-5 text-gold-400"></i>
                 Control de Inventario Interno & Stock
               </h2>
-              <p class="text-xs text-gray-400 mt-0.5">Ajusta el stock físico con los botones (+ / -). Si llega a 0, la tienda mostrará automáticamente "No disponible".</p>
+              <p class="text-xs text-gray-400 mt-0.5">Pulsa + para agregar varias unidades de una vez o - para restar 1. Si llega a 0, la tienda mostrará automáticamente "No disponible".</p>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
               <div class="relative w-full sm:w-72">
@@ -2384,7 +2384,7 @@
                 <div class="flex items-center gap-1.5">
                   <button onclick="quickAdjustStock(${p.id}, -1)" class="w-6 h-6 rounded bg-noir-800 hover:bg-noir-700 text-gray-300 flex items-center justify-center font-bold text-xs border border-white/5 hover:border-gold-500/40" title="Restar 1 unidad">-</button>
                   <span class="w-8 text-center font-bold text-xs text-white">${stock}</span>
-                  <button onclick="quickAdjustStock(${p.id}, 1)" class="w-6 h-6 rounded bg-noir-800 hover:bg-noir-700 text-gray-300 flex items-center justify-center font-bold text-xs border border-white/5 hover:border-gold-500/40" title="Sumar 1 unidad">+</button>
+                  <button onclick="quickAdjustStock(${p.id}, 1)" class="w-6 h-6 rounded bg-noir-800 hover:bg-noir-700 text-gray-300 flex items-center justify-center font-bold text-xs border border-white/5 hover:border-gold-500/40" title="Agregar varias unidades">+</button>
                 </div>
               </div>
             </td>
