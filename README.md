@@ -38,6 +38,14 @@ Existen dos formas discretas de abrir la ventana de acceso:
   - Gráfico de barras con la distribución porcentual de inversión por cada tipo de material
   - Capital inmovilizado en stock al costo y proyección de venta al público
 * **Alta y Edición de Perfumes**: Con subida de fotografías (locales o por URL), pirámide olfativa y notas técnicas.
+* **📄 Exportación a PDF de Todo el Sistema**: Botón dorado **"Descargar Reporte PDF"** (o "Exportar PDF" en el encabezado) que genera un informe consolidado oficial listo para imprimir o descargar como archivo PDF con:
+  - 1. Balance Financiero & Estado de Resultados (Ingresos, Gastos, Utilidad y Margen)
+  - 2. Desglose de Gastos por Tipo de Material e Insumo
+  - 3. Valoración del Inventario en Bodega al Costo vs Proyección al Público
+  - 4. Inventario Completo & Stock Físico (con alertas de agotados y ubicación)
+  - 5. Historial Detallado de Ventas & Facturación (canal, cliente, pago)
+  - 6. Historial Detallado de Compras de Insumos (proveedor, presentación, notas)
+  - 7. Membrete oficial de lujo y espacio de firma de gerencia
 * **Cerrar Sesión (`Salir`)**: Cierra la sesión activa y regresa a la vista de tienda pública.
 
 ---

@@ -663,6 +663,9 @@
             <i id="adminHeaderActionIcon" data-lucide="plus-circle" class="w-4 h-4"></i>
             <span id="adminHeaderActionText">Nuevo Perfume</span>
           </button>
+          <button onclick="exportFullAdminPDF()" class="px-3.5 py-2 bg-noir-800 hover:bg-gold-500 hover:text-black text-gold-400 border border-gold-500/40 text-xs rounded font-semibold transition-all flex items-center gap-1.5 shadow-sm" title="Descargar informe consolidado en PDF de Inventario, Ventas, Gastos y Balance">
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i> Exportar PDF
+          </button>
           <button onclick="openCredentialsModal()" class="px-3 py-2 bg-noir-800 hover:bg-noir-750 text-gray-300 border border-white/10 text-xs rounded transition-colors flex items-center gap-1.5" title="Cambiar usuario y contraseña de administrador">
             <i data-lucide="key-round" class="w-3.5 h-3.5 text-gold-400"></i> Clave
           </button>
@@ -678,7 +681,8 @@
 
     <!-- Admin Subnavigation Bar -->
     <div class="bg-noir-950/90 border-b border-white/10 px-4 sm:px-8 sticky top-0 z-20 backdrop-blur-md">
-      <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto py-2.5">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 py-2.5">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
         <button id="adminTabBtn-inventory" onclick="switchAdminTab('inventory')" class="admin-tab-btn active px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-all whitespace-nowrap">
           <i data-lucide="boxes" class="w-4 h-4 text-gold-400"></i>
           <span>Inventario & Stock</span>
@@ -696,7 +700,16 @@
           <span>Balance & Utilidad</span>
         </button>
       </div>
+
+      <!-- Botón Exportar PDF de todo lo que aparece en la foto -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button onclick="exportFullAdminPDF()" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-black font-bold uppercase tracking-wider text-xs rounded-lg shadow-lg flex items-center gap-2 transition-all whitespace-nowrap" title="Generar informe completo en PDF con Inventario, Ventas, Gastos y Balance">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Descargar Reporte PDF</span>
+        </button>
+      </div>
     </div>
+  </div>
 
     <!-- Admin Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
@@ -1469,6 +1482,65 @@
       </form>
     </div>
   </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: INFORME Y DESCARGA EN PDF           -->
+  <!-- ========================================== -->
+  <div id="pdfReportModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-5">
+    <div class="bg-noir-900 border border-gold-500/40 rounded-2xl max-w-5xl w-full max-h-[94vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-noir-950/90 flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center border border-gold-500/30 flex-shrink-0">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase font-bold tracking-widest text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/20">Documento Oficial</span>
+              <span id="pdfGenerationTimestamp" class="text-[11px] text-gray-400"></span>
+            </div>
+            <h3 class="font-serif text-lg sm:text-2xl font-bold text-white">Informe Integral de Gestión Aura Atelier</h3>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="triggerPrintPDF()" class="px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 text-black font-bold uppercase tracking-wider text-xs rounded-lg shadow-lg flex items-center gap-2 transition-all">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Guardar como PDF / Imprimir</span>
+          </button>
+          <button onclick="closePdfReportModal()" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Document Container (Paper view) -->
+      <div class="p-3 sm:p-6 flex-1 overflow-y-auto bg-noir-950/95 flex justify-center">
+        <div id="pdfReportContent" class="w-full max-w-4xl bg-white text-gray-900 p-6 sm:p-10 rounded-xl shadow-2xl text-xs font-sans leading-normal">
+          <!-- El contenido del informe en PDF se inyecta dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3 sm:p-4 border-t border-white/10 bg-noir-950/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
+        <div class="flex items-center gap-2 text-[11px]">
+          <i data-lucide="info" class="w-4 h-4 text-gold-400 flex-shrink-0"></i>
+          <span>En la ventana de tu navegador, elige <strong>"Guardar como PDF"</strong> en la opción de destino para descargarlo directamente a tus archivos.</span>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="closePdfReportModal()" class="flex-1 sm:flex-none px-4 py-1.5 bg-noir-800 hover:bg-noir-750 text-gray-300 rounded text-xs transition-colors">
+            Cerrar
+          </button>
+          <button onclick="triggerPrintPDF()" class="flex-1 sm:flex-none px-4 py-1.5 bg-gold-500 hover:bg-gold-400 text-black font-bold uppercase text-[11px] rounded transition-all flex items-center justify-center gap-1.5 shadow-md">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Descargar PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden iframe for crisp direct printing -->
+  <iframe id="adminPrintIframe" style="position: fixed; right: 0; bottom: 0; width: 0; height: 0; border: 0; visibility: hidden;"></iframe>
 
   <!-- Shopping Cart Drawer -->
   <div id="cartDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-noir-900 border-l border-gold-500/20 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
@@ -3291,6 +3363,454 @@
 
       const msg = `¡Hola Aura Atelier! Quisiera cotizar una fórmula preparada de laboratorio:\n- Aroma buscado: ${fragrance}\n- Tamaño: ${size}\n- Concentración: ${conc}\n- Teléfono: ${contact}`;
       window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // ==========================================
+    // EXPORTACIÓN DE INFORME COMPLETO EN PDF
+    // ==========================================
+    function exportFullAdminPDF() {
+      // Validar autenticación de administrador
+      if (!isAdminAuthenticated()) {
+        openAdminLoginModal();
+        return;
+      }
+
+      const htmlContent = generateFullReportHTML();
+      const previewContainer = document.getElementById('pdfReportContent');
+      const timestampEl = document.getElementById('pdfGenerationTimestamp');
+      
+      if (previewContainer) {
+        previewContainer.innerHTML = htmlContent;
+      }
+
+      if (timestampEl) {
+        const now = new Date();
+        timestampEl.innerText = `Generado el ${now.toLocaleDateString('es-ES')} a las ${now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+      }
+
+      document.getElementById('pdfReportModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closePdfReportModal() {
+      document.getElementById('pdfReportModal').classList.add('hidden');
+    }
+
+    function triggerPrintPDF() {
+      const content = document.getElementById('pdfReportContent').innerHTML;
+      const printIframe = document.getElementById('adminPrintIframe');
+      if (!printIframe) return;
+
+      const printDoc = printIframe.contentWindow || printIframe.contentDocument;
+      const doc = printDoc.document || printDoc;
+
+      const dateStr = new Date().toISOString().split('T')[0];
+
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>AURA_ATELIER_INFORME_GESTION_${dateStr}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 12mm 14mm;
+            }
+            *, *::before, *::after {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            body {
+              font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+              color: #111827;
+              background: #ffffff;
+              font-size: 10.5px;
+              line-height: 1.45;
+              padding: 10px;
+            }
+            h1, h2, h3, .font-serif {
+              font-family: 'Cormorant Garamond', Georgia, serif;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 6px;
+              margin-bottom: 14px;
+              font-size: 10px;
+            }
+            thead {
+              display: table-header-group;
+            }
+            tr {
+              page-break-inside: avoid;
+            }
+            th, td {
+              padding: 5px 7px;
+              border-bottom: 1px solid #e5e7eb;
+              text-align: left;
+            }
+            th {
+              background-color: #f3f4f6;
+              color: #1f2937;
+              font-weight: 700;
+              text-transform: uppercase;
+              font-size: 9px;
+              letter-spacing: 0.5px;
+              border-top: 1px solid #d1d5db;
+              border-bottom: 2px solid #9ca3af;
+            }
+            .badge {
+              display: inline-block;
+              padding: 2px 5px;
+              border-radius: 3px;
+              font-size: 8.5px;
+              font-weight: 600;
+            }
+            .text-right { text-align: right; }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: 700; }
+            .section-break {
+              page-break-before: auto;
+              margin-top: 16px;
+              padding-top: 10px;
+              border-top: 1px dashed #d1d5db;
+            }
+            .avoid-break {
+              page-break-inside: avoid;
+            }
+          </style>
+        </head>
+        <body>
+          ${content}
+        </body>
+        </html>
+      `);
+      doc.close();
+
+      setTimeout(() => {
+        printIframe.contentWindow.focus();
+        printIframe.contentWindow.print();
+      }, 350);
+    }
+
+    function generateFullReportHTML() {
+      const now = new Date();
+      const dateFormatted = now.toLocaleDateString('es-ES', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      const timeFormatted = now.toLocaleTimeString('es-ES', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+
+      // Cálculos de Balance & Ventas
+      const totalRevenue = sales.reduce((acc, s) => acc + (Number(s.totalPrice) || 0), 0);
+      const totalExpenses = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+      const netProfit = totalRevenue - totalExpenses;
+      const margin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : '0.0';
+      const unitsSold = sales.reduce((acc, s) => acc + (Number(s.qty) || 0), 0);
+      const avgTicket = sales.length > 0 ? Math.round(totalRevenue / sales.length) : 0;
+
+      // Cálculos de Inventario
+      const totalModels = catalog.length;
+      const totalUnitsInStock = catalog.reduce((acc, p) => acc + (Number(p.stock) || 0), 0);
+      const outOfStockCount = catalog.filter(p => (Number(p.stock) || 0) <= 0).length;
+      const stockCostValue = catalog.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.costPrice) || 0)), 0);
+      const projectedRetailValue = catalog.reduce((acc, p) => acc + ((Number(p.stock) || 0) * (Number(p.price) || 0)), 0);
+      const potentialProfit = Math.max(0, projectedRetailValue - stockCostValue);
+
+      // Desglose de Gastos por Material
+      const catKeys = ['esencias', 'frascos', 'atomizadores', 'alcohol', 'empaque', 'laboratorio', 'otros'];
+      const catTotals = {};
+      catKeys.forEach(k => catTotals[k] = 0);
+      expenses.forEach(e => {
+        const c = catKeys.includes(e.category) ? e.category : 'otros';
+        catTotals[c] += (Number(e.amount) || 0);
+      });
+
+      return `
+        <!-- Encabezado de Membrete Oficial -->
+        <div style="border-bottom: 2px solid #b89628; padding-bottom: 12px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #855e09; font-weight: 700;">Haute Parfumerie & Lab Éditions</div>
+              <h1 style="font-size: 26px; font-weight: 700; color: #111827; margin: 2px 0; font-family: 'Cormorant Garamond', Georgia, serif; letter-spacing: 1px;">AURA ATELIER</h1>
+              <div style="font-size: 13px; font-weight: 600; color: #374151;">Informe Integral de Gestión, Inventario & Finanzas</div>
+            </div>
+            <div style="text-align: right; font-size: 10px; color: #4b5563;">
+              <div><strong>Fecha de Emisión:</strong> ${dateFormatted}</div>
+              <div><strong>Hora:</strong> ${timeFormatted}</div>
+              <div><strong>Generado por:</strong> Administrador Autorizado (admin)</div>
+              <div><strong>Estado:</strong> Auditoría Oficial Consolidada</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECCIÓN 1: BALANCE FINANCIERO & ESTADO DE RESULTADOS -->
+        <!-- ============================================== -->
+        <div class="avoid-break" style="margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <h2 style="font-size: 15px; font-weight: 700; color: #111827; font-family: 'Cormorant Garamond', Georgia, serif; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #b89628; padding-left: 8px;">
+              1. Balance Financiero & Rentabilidad
+            </h2>
+            <span style="font-size: 9.5px; color: #6b7280;">Moneda: Pesos ($)</span>
+          </div>
+
+          <!-- Cuadrícula de 4 Tarjetas de Resumen Ejecutivo -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px;">
+              <span style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: #166534; display: block; margin-bottom: 2px;">Total Ingresos (Ventas)</span>
+              <span style="font-size: 16px; font-weight: 700; color: #14532d; font-family: 'Cormorant Garamond', Georgia, serif;">${formatPrice(totalRevenue)}</span>
+              <span style="font-size: 8.5px; color: #15803d; display: block; margin-top: 2px;">${sales.length} ventas (${unitsSold} u.)</span>
+            </div>
+
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 8px;">
+              <span style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: #991b1b; display: block; margin-bottom: 2px;">(-) Gastos en Materiales</span>
+              <span style="font-size: 16px; font-weight: 700; color: #7f1d1d; font-family: 'Cormorant Garamond', Georgia, serif;">${formatPrice(totalExpenses)}</span>
+              <span style="font-size: 8.5px; color: #b91c1c; display: block; margin-top: 2px;">${expenses.length} compras insumos</span>
+            </div>
+
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 8px;">
+              <span style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: #92400e; display: block; margin-bottom: 2px;">(=) Utilidad Neta Real</span>
+              <span style="font-size: 16px; font-weight: 700; color: #78350f; font-family: 'Cormorant Garamond', Georgia, serif;">${formatPrice(netProfit)}</span>
+              <span style="font-size: 8.5px; color: #b45309; display: block; margin-top: 2px;">${netProfit >= 0 ? 'Margen positivo' : 'Déficit de arranque'}</span>
+            </div>
+
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px;">
+              <span style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: #1e40af; display: block; margin-bottom: 2px;">Margen de Rentabilidad</span>
+              <span style="font-size: 16px; font-weight: 700; color: #1e3a8a; font-family: 'Cormorant Garamond', Georgia, serif;">${margin}%</span>
+              <span style="font-size: 8.5px; color: #2563eb; display: block; margin-top: 2px;">Ticket prom: ${formatPrice(avgTicket)}</span>
+            </div>
+          </div>
+
+          <!-- Dos Columnas: Distribución de Materiales & Capital en Bodega -->
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px;">
+            <!-- Distribución de gastos -->
+            <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; background: #fafafa;">
+              <div style="font-size: 10px; font-weight: 700; color: #374151; margin-bottom: 6px; text-transform: uppercase;">
+                Distribución de Inversión por Tipo de Insumo
+              </div>
+              <table style="margin: 0; font-size: 9.5px;">
+                <thead>
+                  <tr>
+                    <th>Categoría de Material</th>
+                    <th style="text-align: right;">Monto ($)</th>
+                    <th style="text-align: right;">% Part.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${catKeys.map(k => {
+                    const info = MATERIAL_CATEGORIES_INFO[k] || MATERIAL_CATEGORIES_INFO['otros'];
+                    const val = catTotals[k];
+                    const pct = totalExpenses > 0 ? ((val / totalExpenses) * 100).toFixed(1) : '0.0';
+                    return `
+                      <tr>
+                        <td style="padding: 3px 6px;">${info.name}</td>
+                        <td style="padding: 3px 6px; text-align: right; font-weight: 600;">${formatPrice(val)}</td>
+                        <td style="padding: 3px 6px; text-align: right; color: #4b5563;">${pct}%</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Capital en Bodega -->
+            <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; background: #fafafa; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 10px; font-weight: 700; color: #374151; margin-bottom: 6px; text-transform: uppercase;">
+                  Valoración de Inventario en Bodega
+                </div>
+                <div style="margin-bottom: 6px; font-size: 9.5px;">
+                  <span style="color: #6b7280; display: block;">Valor Stock Físico (al costo):</span>
+                  <strong style="font-size: 13px; color: #111827;">${formatPrice(stockCostValue)}</strong>
+                </div>
+                <div style="margin-bottom: 6px; font-size: 9.5px;">
+                  <span style="color: #6b7280; display: block;">Proyección de Venta al Público:</span>
+                  <strong style="font-size: 13px; color: #047857;">${formatPrice(projectedRetailValue)}</strong>
+                </div>
+                <div style="font-size: 9.5px;">
+                  <span style="color: #6b7280; display: block;">Ganancia Potencial en Stock:</span>
+                  <strong style="font-size: 13px; color: #855e09;">${formatPrice(potentialProfit)}</strong>
+                </div>
+              </div>
+              <div style="font-size: 8.5px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 4px; margin-top: 6px;">
+                Unidades físicas disponibles para despacho: <strong>${totalUnitsInStock} unidades</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECCIÓN 2: INVENTARIO & STOCK FÍSICO           -->
+        <!-- ============================================== -->
+        <div class="avoid-break" style="margin-top: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <h2 style="font-size: 14px; font-weight: 700; color: #111827; font-family: 'Cormorant Garamond', Georgia, serif; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #b89628; padding-left: 8px;">
+              2. Inventario & Control de Stock Físico
+            </h2>
+            <span style="font-size: 9.5px; color: #4b5563;">
+              Total: <strong>${totalModels} modelos</strong> | En stock: <strong>${totalUnitsInStock} u.</strong> | Agotados: <strong>${outOfStockCount}</strong>
+            </span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 28%;">Fragancia & Casa</th>
+                <th style="width: 14%;">Tipo</th>
+                <th style="width: 13%; text-align: center;">Stock Físico</th>
+                <th style="width: 13%; text-align: right;">Costo Interno</th>
+                <th style="width: 13%; text-align: right;">Precio Público</th>
+                <th style="width: 13%; text-align: right;">Subtotal Costo</th>
+                <th style="width: 16%;">Ubicación / SKU</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${catalog.map(p => {
+                const stock = Number(p.stock) || 0;
+                const cost = Number(p.costPrice) || 0;
+                const subtotal = stock * cost;
+
+                let stockStatus = '';
+                if (stock === 0) {
+                  stockStatus = '<span style="color: #b91c1c; font-weight: 700; background: #fee2e2; padding: 2px 5px; border-radius: 3px;">0 u. (AGOTADO)</span>';
+                } else if (stock <= 3) {
+                  stockStatus = `<span style="color: #b45309; font-weight: 700; background: #fef3c7; padding: 2px 5px; border-radius: 3px;">${stock} u. (BAJO)</span>`;
+                } else {
+                  stockStatus = `<span style="color: #15803d; font-weight: 600;">${stock} u.</span>`;
+                }
+
+                let typeLabel = p.type === 'original' ? 'Original' : (p.type === 'preparado' ? 'Preparado 33%' : 'Decant');
+
+                return `
+                  <tr style="${stock === 0 ? 'background-color: #fff5f5;' : ''}">
+                    <td><strong>${p.name}</strong><br><span style="color: #6b7280; font-size: 8.5px;">${p.house} • ${p.volume}</span></td>
+                    <td>${typeLabel}</td>
+                    <td style="text-align: center;">${stockStatus}</td>
+                    <td style="text-align: right; color: #4b5563;">${formatPrice(cost)}</td>
+                    <td style="text-align: right; font-weight: 600;">${formatPrice(p.price)}</td>
+                    <td style="text-align: right; font-weight: 600; color: #111827;">${formatPrice(subtotal)}</td>
+                    <td style="font-size: 9px; color: #4b5563;">${p.location || 'Depósito General'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECCIÓN 3: VENTAS & FACTURACIÓN                -->
+        <!-- ============================================== -->
+        <div class="avoid-break" style="margin-top: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <h2 style="font-size: 14px; font-weight: 700; color: #111827; font-family: 'Cormorant Garamond', Georgia, serif; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #16a34a; padding-left: 8px;">
+              3. Historial de Ventas & Facturación
+            </h2>
+            <span style="font-size: 9.5px; color: #4b5563;">
+              Total Facturado: <strong style="color: #15803d;">${formatPrice(totalRevenue)}</strong> (${sales.length} registros)
+            </span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 12%;">Fecha</th>
+                <th style="width: 28%;">Fragancia / Concepto</th>
+                <th style="width: 8%; text-align: center;">Cant.</th>
+                <th style="width: 13%; text-align: right;">Unitario</th>
+                <th style="width: 14%; text-align: right;">Total Venta</th>
+                <th style="width: 13%;">Canal</th>
+                <th style="width: 18%;">Cliente & Pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sales.map(s => `
+                <tr>
+                  <td style="font-family: monospace; font-size: 9px; color: #4b5563;">${s.date || 'Reciente'}</td>
+                  <td><strong>${s.productName}</strong></td>
+                  <td style="text-align: center; font-weight: 600;">${s.qty}</td>
+                  <td style="text-align: right; color: #4b5563;">${formatPrice(s.unitPrice)}</td>
+                  <td style="text-align: right; font-weight: 700; color: #15803d;">${formatPrice(s.totalPrice)}</td>
+                  <td><span style="font-weight: 600; color: #374151;">${s.channel}</span></td>
+                  <td>
+                    <span style="font-weight: 500;">${s.customer || 'Mostrador Local'}</span><br>
+                    <span style="font-size: 8.5px; color: #6b7280;">${s.payment || 'Efectivo'}</span>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECCIÓN 4: GASTOS EN MATERIALES DE PERFUMERÍA  -->
+        <!-- ============================================== -->
+        <div class="avoid-break" style="margin-top: 18px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <h2 style="font-size: 14px; font-weight: 700; color: #111827; font-family: 'Cormorant Garamond', Georgia, serif; text-transform: uppercase; letter-spacing: 0.5px; border-left: 3px solid #d97706; padding-left: 8px;">
+              4. Compras & Gastos en Materiales de Perfumería
+            </h2>
+            <span style="font-size: 9.5px; color: #4b5563;">
+              Total Gastado en Insumos: <strong style="color: #b45309;">${formatPrice(totalExpenses)}</strong> (${expenses.length} compras)
+            </span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 12%;">Fecha</th>
+                <th style="width: 28%;">Concepto / Material</th>
+                <th style="width: 18%;">Tipo de Insumo</th>
+                <th style="width: 14%;">Presentación / Cant.</th>
+                <th style="width: 16%;">Proveedor</th>
+                <th style="width: 14%; text-align: right;">Monto ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${expenses.map(e => {
+                const catInfo = MATERIAL_CATEGORIES_INFO[e.category] || MATERIAL_CATEGORIES_INFO['otros'];
+                return `
+                  <tr>
+                    <td style="font-family: monospace; font-size: 9px; color: #4b5563;">${e.date || 'Reciente'}</td>
+                    <td><strong>${e.concept}</strong>${e.notes ? `<br><span style="font-size: 8.5px; color: #6b7280;">${e.notes}</span>` : ''}</td>
+                    <td><span style="font-size: 9px; font-weight: 600; color: #92400e;">${catInfo.name}</span></td>
+                    <td>${e.quantity || '—'}</td>
+                    <td style="color: #4b5563;">${e.supplier || 'Local'}</td>
+                    <td style="text-align: right; font-weight: 700; color: #b45309;">${formatPrice(e.amount)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- PIE DE PÁGINA & FIRMA DE VALIDACIÓN OFICIAL    -->
+        <!-- ============================================== -->
+        <div class="avoid-break" style="margin-top: 24px; padding-top: 14px; border-top: 1px solid #d1d5db;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 20px;">
+            <div style="font-size: 9px; color: #6b7280; max-width: 60%;">
+              <strong>AURA ATELIER • SISTEMA DE GESTIÓN & LABORATORIO</strong><br>
+              Este reporte consolida las métricas comerciales y financieras internas de existencias, ventas y adquisición de insumos de perfumería. Documento de carácter confidencial para control de stock y auditoría administrativa.
+            </div>
+
+            <div style="text-align: center; width: 220px;">
+              <div style="border-bottom: 1px solid #111827; height: 35px; margin-bottom: 4px;"></div>
+              <div style="font-size: 9.5px; font-weight: 700; color: #111827;">Dirección General / Administrador</div>
+              <div style="font-size: 8.5px; color: #6b7280;">Aura Atelier Haute Parfumerie</div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function showToast(msg, type = "success") {
