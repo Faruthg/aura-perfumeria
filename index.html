@@ -2424,15 +2424,28 @@
       const item = catalog.find(p => p.id === id);
       if (!item) return;
 
-      const current = Number(item.stock) || 0;
-      const updated = Math.max(0, current + delta);
+      let amount = 1;
+      if (delta > 0) {
+        const enteredAmount = prompt(`¿Cuántas unidades deseas agregar a "${item.name}"?`, '1');
+        if (enteredAmount === null) return;
+        amount = Number(enteredAmount);
+        if (!Number.isSafeInteger(amount) || amount < 1) {
+          showToast('Ingresa una cantidad entera mayor que cero', 'warning');
+          return;
+        }
+      }
+
+      const current = Math.max(0, Number(item.stock) || 0);
+      const updated = Math.max(0, current + (delta > 0 ? amount : -amount));
       item.stock = updated;
 
-      saveCatalog();
-      if (updated === 0) {
-        showToast(`"${item.name}" ahora está sin stock (No disponible)`, "warning");
-      } else {
-        showToast(`Stock de "${item.name}": ${updated} unidades`, "info");
+      try {
+        saveCatalog();
+        showToast(`Stock de "${item.name}": ${updated} unidades`, 'success');
+      } catch (error) {
+        item.stock = current;
+        console.error('No se pudo guardar el inventario:', error);
+        showToast('No se pudo guardar el stock en este navegador', 'error');
       }
     }
 
